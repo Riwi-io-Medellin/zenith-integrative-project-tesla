@@ -1,0 +1,64 @@
+*{
+    letter-spacing: 0.70px;
+    font-weight: 615;
+}
+
+:root{
+    --black-color:  #000000ff;
+    --blue-dark-color: #012740;
+    --purple-dark-color: #37023C;
+    --vine-color: rgba(138, 20, 40, 1);
+    --probably-purple: #b72d88;
+    --green-color: rgb(0, 110, 48);
+    --white-color: rgb(255,255,255);
+}
+
+.form-control::placeholder {
+    color: #bbb;
+    opacity: 1; 
+}
+h1{
+    color: var(--white-color);
+    letter-spacing: 0.80px;
+}
+.btn-register{
+    color: var(--white-color);
+}
+.login-body{
+    background-image: url(../assets/badges/img/zorritaasd.svg); 
+    background-size: cover;
+    background-position: center;
+}
+.register-body{
+    background-image: url(../assets/badges/img/zorritaasd.svg); 
+    background-size: cover;
+    background-position: center;
+
+}
+
+.text-2{
+    color: #bbb;
+    font-size: 16px;
+}
+.form-control{
+    font-weight: 500;
+
+}
+.cont-left{
+    background: rgba(255, 255, 255, 0.08); /* transparencia */
+    backdrop-filter: blur(12px); /* EL EFECTO CLAVE */
+    -webkit-backdrop-filter: blur(12px);
+}
+.btn-link:hover{
+    color: #000000ff;
+}
+@media (max-width: 768px) {
+    .login-section {
+        padding: 20px;
+    }
+    .cont-left{
+    background: rgba(255, 255, 255, 0.02); /* transparencia */
+    backdrop-filter: blur(3px); /* EL EFECTO CLAVE */
+    -webkit-backdrop-filter: blur(3px);
+}
+}
