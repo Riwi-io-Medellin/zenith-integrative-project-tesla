@@ -10,6 +10,12 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
+pool.on("connect", (client) =>{
+  const schema = process.env.DB_SCHEMA || "public";
+  client.query(`SET search_path TO ${schema}, public`)
+    .catch(error => console.error("Error config search_path", error));
+})
+
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
     console.error('❌ Error conectando a PostgreSQL:', err.stack);
