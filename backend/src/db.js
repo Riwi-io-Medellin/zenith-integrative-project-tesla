@@ -18,9 +18,9 @@ pool.on("connect", (client) =>{
 
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
-    console.error('❌ Error conectando a PostgreSQL:', err.stack);
+    console.error('Error connection to PostgreSQL:', err.stack);
   } else {
-    console.log('✅ Conexión a PostgreSQL exitosa');
+    console.log('connected to PostgreSQL');
   }
 });
 
