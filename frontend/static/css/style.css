@@ -46,6 +46,7 @@ h1{
     background-image: url(../assets/img/zorrita.svg); 
     background-size: cover;
     background-position: center;
+    overflow: hidden;
 }
 .register-body{
     background-image: url(../assets/img/zorrita.svg); 
@@ -58,8 +59,8 @@ h1{
     box-sizing: border-box;
     position: absolute;
     left: 0;
-    width: 400px;
-    height: 200px;
+    width: 100px;
+    height: 100px;
     z-index: 0; 
     cursor: pointer;
 }
@@ -98,10 +99,10 @@ input:-webkit-autofill:active {
         transform: translate(90vw, 70vh) rotate(-48deg);
     }
     95% { 
-        transform: translate(110vw, 90vh) rotate(-56deg);
+        transform: translate(100vw, 90vh) rotate(-56deg);
     }
     100% {
-        transform: translate(120vw, 110vh) rotate(-56deg);
+        transform: translate(100vw, 97vh) rotate(-56deg) ;
     }
 }
 .text-2{
@@ -176,6 +177,10 @@ input:-webkit-autofill:active {
 }
 
 @media (max-width: 480px) {
+    .zorra img {
+        width: 100px; /* Mucho más pequeño para móvil */
+        height: auto;
+    }
     .card-messages {
         right: 10px;
         left: 10px;
