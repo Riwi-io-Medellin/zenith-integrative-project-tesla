@@ -1,169 +1,174 @@
-import { loginForm, email, password, registerForm, registerName, registerEmail, registerPassword, confirmPassword, loginMessage, registerMessage} from "./elements.js";
+import { 
+    loginForm, 
+    email, 
+    password, 
+    registerForm, 
+    registerName, 
+    registerEmail, 
+    registerPassword, 
+    confirmPassword
+} from "./elements.js";
 
-//interactive button for watch password
+
+/* TOAST SYSTEM */
+
+// Get global toast element
+const msgToast = document.getElementById("toastMessage");
+
+// Displays floating notification message
+function displayMessage(text, type) {
+    msgToast.textContent = text;
+    msgToast.className = `card-messages active msg-${type}`;
+
+    // Start fade-out animation
+    setTimeout(() => msgToast.classList.add("fade-out"), 4000);
+
+    // Reset toast after animation
+    setTimeout(() => {
+        msgToast.className = "card-messages";
+        msgToast.textContent = "";
+    }, 4500);
+}
+
+
+/* PASSWORD VALIDATION */
+
+// Validates: min 6 characters, 1 uppercase, 1 number
+function validatePassword(password) {
+    const regex = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
+    return regex.test(password);
+}
+
+
+/* TOGGLE PASSWORD VISIBILITY */
+
+// Switches password input between text and password
 function togglePassword(inputId, iconId) {
-    const passwordInput = document.getElementById(inputId);
-    const eyeIcon = document.getElementById(iconId);
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
 
-    if (passwordInput.type === "password") {
-        passwordInput.type = "text";
-        eyeIcon.classList.remove("bi-eye-slash");
-        eyeIcon.classList.add("bi-eye");
+    if (!input || !icon) return;
+
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.replace("bi-eye-slash", "bi-eye");
     } else {
-        passwordInput.type = "password";
-        eyeIcon.classList.remove("bi-eye");
-        eyeIcon.classList.add("bi-eye-slash");
+        input.type = "password";
+        icon.classList.replace("bi-eye", "bi-eye-slash");
     }
 }
-// LOGIN
-const toggleLogin = document.getElementById("toggleLoginPassword");
-if (toggleLogin) {
-    toggleLogin.addEventListener("click", function () {
-        togglePassword("loginPassword", "loginEyeIcon");
-    });
-}
 
-// REGISTER
-const toggleRegister = document.getElementById("toggleRegisterPassword");
-if (toggleRegister) {
-    toggleRegister.addEventListener("click", function () {
-        togglePassword("registerPassword", "registerEyeIcon");
-    });
-}
+// Login toggle
+document.getElementById("toggleLoginPassword")
+    ?.addEventListener("click", () =>
+        togglePassword("loginPassword", "loginEyeIcon")
+    );
 
-const toggleConfirm = document.getElementById("toggleConfirmPassword");
-if (toggleConfirm) {
-    toggleConfirm.addEventListener("click", function () {
-        togglePassword("confirmRegisterPassword", "confirmEyeIcon");
-    });
-}
+// Register toggles
+document.getElementById("toggleRegisterPassword")
+    ?.addEventListener("click", () =>
+        togglePassword("registerPassword", "registerEyeIcon")
+    );
+
+document.getElementById("toggleConfirmPassword")
+    ?.addEventListener("click", () =>
+        togglePassword("confirmRegisterPassword", "confirmEyeIcon")
+    );
 
 
-
-// LOGIN
+/* LOGIN HANDLER */
 
 if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+        e.preventDefault(); // Prevent default form submission
 
-    try {
-    const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-        "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-        email: email.value,
-        password: password.value
-        })
-    });
+        try {
+            const response = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: email.value,
+                    password: password.value
+                })
+            });
 
-    const data = await response.json();
+            const data = await response.json();
 
-    if (response.ok) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("token", data.token);
+            if (response.ok) {
+                // Store user session data
+                localStorage.setItem("user", JSON.stringify(data.user));
+                localStorage.setItem("token", data.token);
 
-        loginMessage.textContent = "Log In Successful";
-        loginMessage.className = "mt-3 text-success text-center";
-        window.location.href = "/dashboard";
-        setTimeout(() => {
-            loginMessage.classList.add("fade-out")
-        }, 2500);
-        setTimeout(() => {
-            loginMessage.textContent = "";
-            loginMessage.className = "mt-3 text-center"
-        },3000);
-    } else {
-        loginMessage.textContent = data.message || "Error to log in";
-        loginMessage.className = "mt-3 text-danger text-center"
-        setTimeout(() => {
-            loginMessage.classList.add("fade-out")
-        }, 2500);
-        setTimeout(() => {
-            loginMessage.textContent = "";
-            loginMessage.className = "mt-3 text-center"
-        },3000);
-    }
+                displayMessage("Login successful!", "success");
 
-    } catch (error) {
-        console.error(error);
-        loginMessage.textContent = "Fail! Error to connect to the server";
-        loginMessage.className = "mt-3 text-danger text-center";
-        setTimeout(() => {
-            loginMessage.classList.add("fade-out")
-        }, 2500);
-        setTimeout(() => {
-            loginMessage.textContent = "";
-            loginMessage.className = "mt-3 text-center"
-        },3000);
-    }
+                // Redirect after short delay
+                setTimeout(() => {
+                    window.location.href = "/dashboard";
+                }, 1500);
+
+            } else {
+                displayMessage(data.message || "Invalid credentials.", "error");
+            }
+
+        } catch (error) {
+            console.error(error);
+            displayMessage("Server connection error.", "error");
+        }
     });
 }
 
 
-// REGISTER
+
+/*  REGISTER HANDLER */
 
 if (registerForm) {
     registerForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+        e.preventDefault(); // Prevent default form submission
 
-    // Verify passwords
-    if (registerPassword.value !== confirmPassword.value) {
-    alert("The passwords aren't the same");
-    return;
-    }
+        // Validate password strength
+        if (!validatePassword(registerPassword.value)) {
+            displayMessage(
+                "Password must be at least 6 characters, include 1 uppercase and 1 number.",
+                "error"
+            );
+            return;
+        }
 
-    try {
-    const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-        "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-        full_name: registerName.value,
-        email: registerEmail.value,
-        password: registerPassword.value
-        })
+        // Validate password confirmation
+        if (registerPassword.value !== confirmPassword.value) {
+            displayMessage("Passwords do not match.", "error");
+            return;
+        }
+
+        try {
+            const response = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    full_name: registerName.value,
+                    email: registerEmail.value,
+                    password: registerPassword.value
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                displayMessage("User registered successfully!", "success");
+                registerForm.reset(); // Clear form
+
+                // Redirect after short delay
+                setTimeout(() => {
+                    window.location.href = "/";
+                }, 1500);
+
+            } else {
+                displayMessage(data.message || "Registration failed.", "error");
+            }
+
+        } catch (error) {
+            console.error(error);
+            displayMessage("Server connection error.", "error");
+        }
     });
-
-    const data = await response.json();
-
-    if (response.ok) {
-        registerMessage.textContent("User registered correctly");
-        registerMessage.className = "mt-3 text-success";
-        registerForm.reset()
-        window.location.href = "/";
-        setTimeout(() => {
-            registerMessage.classList.add("fade-out")
-        }, 2500);
-        setTimeout(() => {
-            registerMessage.textContent = "";
-            registerMessage.className = "mt-3 text-center"
-        },3000);
-    } else {
-        registerMessage.textContent = data.message || "Error to register the new user";
-        registerMessage.className = "mt-3 text-danger text-center";
-        setTimeout(() => {
-            registerMessage.classList.add("fade-out")
-        }, 2500);
-        setTimeout(() => {
-            registerMessage.textContent = "";
-            registerMessage.className = "mt-3 text-center"
-        },3000);
-    }
-
-    } catch (error) {
-        console.error(error);
-        registerMessage.textContent = "Fail! Error to connect to the server";
-        registerMessage.className = "mt-3 text-danger text-center";
-        setTimeout(() => {
-            registerMessage.classList.add("fade-out")
-        }, 2500);
-        setTimeout(() => {
-            registerMessage.textContent = "";
-            registerMessage.className = "mt-3 text-center"
-        },3000);
-    }
-});
 }

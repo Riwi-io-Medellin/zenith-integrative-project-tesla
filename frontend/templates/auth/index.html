@@ -10,7 +10,7 @@
 </head> 
 <body class="login-body">
     <div class="container-fluid p-0">
-        <div class="zorra"><img src="/assets/badges/img/zorrita 2.svg" alt="" ></div>
+        <div class="zorra"><img src="/assets/img/zorrita 2.svg" alt="" ></div>
         <div class="row w-0 vh-100 g-0  ">
             
             <div class="col-12 col-md-7 col-lg-5 col-xl-5 d-flex align-items-center justify-content-center login-section cont-left">
@@ -37,16 +37,16 @@
                             </div>
                         </div>
 
-                        <button class="btn btn-dark w-100 btn-login mb-5" id="btnLogIn" type="submit">
+                        <button class="btn btn-join w-100 btn-login mb-5" id="btnLogIn" type="submit">
                             Log In
                         </button>
                         <div class="text-center small mb-4 mt-2">
                             <p class="text-center small mb-3 text-2">
-                                Don't have account?!
-                                <a class="border-0 bg-transparent text-decoration-none btn-link btn-register" href="/register">Sign Up</a>
+                                Don't have account?! 
+                                <a class="border-0 bg-transparent text-decoration-none btn-change" href="/register"> Sign Up</a>
                             </p>
-                            <div class="text-center small mt-2" id="loginMessage"></div>
                         </div>
+
                     </form>
                 </div>
 
@@ -54,6 +54,7 @@
 
         </div>
     </div>
+    <div class="card-messages" id="toastMessage"></div>
     <script type="module" src="/js/auth.js"></script>
 </body>
 </html>

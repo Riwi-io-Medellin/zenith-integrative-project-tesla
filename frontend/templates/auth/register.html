@@ -11,7 +11,7 @@
 </head>
 <body class="register-body">
     <div class="container-fluid p-0">
-        <div class="zorra"><img src="/assets/badges/img/zorrita 2.svg" alt="" ></div>
+        <div class="zorra"><img src="/assets/img/zorrita 2.svg" alt="" ></div>
         <div class="row vh-100 g-0 ">
             
             <div class="col-12 col-md-6 col-lg-5 col-xl-5 d-flex align-items-center justify-content-center register-section cont-left">
@@ -55,16 +55,15 @@
                         </div>
 
 
-                        <button class="btn btn-dark w-100 btn-login mb-2" id="btnRegister" type="submit">
+                        <button class="btn btn-join w-100 btn-login mb-2" id="btnRegister" type="submit">
                             Sign Up
                         </button>
                         <div class="text-center small mb-4 mt-3">
                             <p class="text-center small mt-1 text-3 text-white">
                                 Thank You for stay here!
-                                <a class="border-0 bg-transparent text-decoration-none btn-link btn-register" href="/">Sign In</a>
+                                <a class="border-0 bg-transparent text-decoration-none btn-change" href="/">Sign In</a>
                             </p>
                         </div>
-                        <div class="text-center small mt-1" id="registerMessage"></div>
                     </form>
                 </div>
 
@@ -72,6 +71,7 @@
 
         </div>
     </div>
+    <div id="toastMessage" class="card-messages"></div>
     <script type="module" src="/js/auth.js"></script>
 </body>
 </html>
