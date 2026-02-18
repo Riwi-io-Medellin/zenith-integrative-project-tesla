@@ -156,6 +156,16 @@ input:-webkit-autofill:active {
     -webkit-backdrop-filter: blur(12px);
 }
 @media (max-width: 768px) {
+    .zorra img {
+        width: 100px;  
+        height: auto;
+        overflow: hidden;
+    } 
+    .zorra {
+        width: 100px;
+        height: 100px;
+        overflow: hidden;
+    }
     .login-section {
         padding: 20px;
     }
@@ -176,10 +186,17 @@ input:-webkit-autofill:active {
     }
 }
 
+
 @media (max-width: 480px) {
     .zorra img {
-        width: 100px; /* Mucho más pequeño para móvil */
+        width: 100px;  
         height: auto;
+        overflow: hidden;
+    } 
+    .zorra {
+        width: 100px;
+        height: 100px;
+        overflow: hidden;
     }
     .card-messages {
         right: 10px;
