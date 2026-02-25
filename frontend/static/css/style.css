@@ -13,27 +13,25 @@
     --oficial-color: #08061B;
     --grey-color: #bbb;
     --bg: #0f2323;
-    --text: #ffffff;
+    --text: #0b0b0b;
     --muted: #94a3b8;
     --primary: #06f9f9;
     --border: rgba(6, 249, 249, 0.2);
-    --card: rgba(15, 35, 35, 0.85);
-    --card-dark: rgba(15, 35, 35, 0.9);
+    --card: rgba(254, 254, 254, 0.85);
+    --card-dark: rgba(249, 250, 250, 0.9);
 }
-
-
 
 .form-control::placeholder {
     color: var(--grey-color);
     opacity: 1; 
 }
 h1{
-    color: var(--white-color);
+    color: var(--black-color);
     letter-spacing: 0.80px;
 }
 h2,
 h3 {
-  color: var(--white-color);
+  color: var(--black-color);
 }
 .btn-change{
     color: var(--grey-color);
@@ -124,8 +122,8 @@ body {
   padding: 6px 12px;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: rgba(6, 249, 249, 0.08);
-  color: var(--primary);
+  background: rgba(5, 211, 211, 0.261);
+  color: var(--black-colors);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -173,8 +171,8 @@ body {
 .chip {
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(6, 249, 249, 0.2);
-  color: var(--primary);
+  background: rgba(4, 144, 144, 0.44);
+  color: var(--black-color);
   font-size: 11px;
   text-transform: uppercase;
 }
@@ -332,7 +330,7 @@ body {
   border: none;
   border-radius: 0;
   padding: 0;
-  color: #e2e8f0;
+  color: #0c0c0c;
 }
 
 .tag-label {
@@ -378,7 +376,6 @@ body {
   padding: 18px 12px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.18);
-  background: var(--card-dark);
   display: grid;
   gap: 8px;
 }
@@ -388,14 +385,14 @@ body {
   height: 48px;
   margin: 0 auto;
   border-radius: 10px;
-  background: rgba(6, 249, 249, 0.2);
+  background: rgba(4, 144, 144, 0.44);
   display: grid;
   place-items: center;
 }
 
 .badge-icon i {
   font-size: 20px;
-  color: var(--primary);
+  color: var();
 }
 
 .footer__brand i {
@@ -410,7 +407,12 @@ body {
 }
 
 .badge small {
-  color: var(--muted);
+  color: var(--black-color);
+}
+
+
+p {
+  color: var(--black-color);
 }
 
 .footer {
@@ -419,13 +421,14 @@ body {
   right: 0;
   bottom: 0;
   height: 60px;
-  background: rgba(15, 35, 35, 0.95);
+  background: rgba(232, 228, 222, 0.952);
   border-top: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
   gap: 16px;
+  z-index: 1000;
 }
 
 .footer__brand,
@@ -448,7 +451,7 @@ body {
 }
 
 .search {
-  background: rgba(6, 249, 249, 0.1);
+   background: rgba(5, 211, 211, 0.261);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 6px 10px;
@@ -563,16 +566,13 @@ body {
     }
 }
 .text-2{
-    color: var(--white-color);
+    color: var(--black-color);
     font-size: 16px;
 }
 .form-control{
     font-weight: 500;
 
 }
-
-
-
 
 .card-messages {
     position: fixed;

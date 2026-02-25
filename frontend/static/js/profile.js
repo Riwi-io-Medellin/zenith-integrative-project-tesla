@@ -4,6 +4,13 @@ const avatarInput = document.querySelector("#avatarInput"); // Captura el input 
 const avatarLabel = document.querySelector(".avatar"); // Referencia al contenedor visual del avatar.
 const footerAvatar = document.querySelector(".footer__avatar"); // Referencia al avatar del footer.
 
+
+fetch("../partials/navbar.html")
+  .then(response => response.text())
+  .then(data => {
+    document.getElementById("footer").innerHTML = data;
+  });
+  
 if (badgeSearch) { // Verifica que exista el input antes de usarlo.
   badgeSearch.addEventListener("input", (event) => { // Escucha el evento al escribir.
     const value = event.target.value.trim().toLowerCase(); // Normaliza el texto ingresado.
@@ -32,3 +39,8 @@ if (avatarInput && avatarLabel) { // Valida que existan input y label.
     }
   });
 }
+
+
+  
+
+  
