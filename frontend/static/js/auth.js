@@ -103,7 +103,7 @@ if (loginForm) {
 
                 // Redirect after short delay
                 setTimeout(() => {
-                    window.location.href = "/dashboard";
+                    window.location.href = "/profile";
                 }, 1500);
 
             } else {
