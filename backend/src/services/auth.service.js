@@ -1,4 +1,4 @@
-import {pool} from "../db.js"
+import pool from "../configuration/posgresdb.js"
 import bcrypt from "bcrypt";
 
 
