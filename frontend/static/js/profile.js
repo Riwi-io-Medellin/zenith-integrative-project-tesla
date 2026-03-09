@@ -4,7 +4,7 @@ const avatarInput = document.querySelector("#avatarInput"); // Captura el input 
 const avatarLabel = document.querySelector(".avatar"); // Referencia al contenedor visual del avatar.
 const footerAvatar = document.querySelector(".footer__avatar"); // Referencia al avatar del footer.
 
-const port = "http://localhost:4000"; // URL base para las peticiones al backend.
+const port = "http://127.0.0.1:4000"; // URL base para las peticiones al backend.
 
 fetch("../partials/navbar.html")
   .then(response => response.text())
@@ -219,7 +219,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         };
 
         try {
-            const response = await fetch('http://localhost:4000/api/user/profileput', {
+            const response = await fetch(`${port}/api/user/profileput`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),

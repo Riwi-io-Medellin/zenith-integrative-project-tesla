@@ -50,7 +50,7 @@ const login = async (req, res) => {
                 secure: false, // Para desarrollo sin HTTPS
                 sameSite: "lax",
                 path: "/",
-                maxAge: 2 * 60 * 60 * 1000 // 2 horas
+                maxAge: 24 * 60 * 60 * 1000, // 1 day
             });
 
             return res.json({ 
