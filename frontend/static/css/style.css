@@ -74,7 +74,10 @@ input::placeholder{
 input:focus{
     outline:none;
 }
-
+.form-control:focus {
+  box-shadow: none;
+  outline: none;
+}
 /* Autofill fix */
 
 input:-webkit-autofill,
