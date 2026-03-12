@@ -6,9 +6,15 @@ export const coursesServices = {
 
         try {
 
-            const query = "SELECT * FROM get_user_course ($1)";
-            const res = await pool.query(query, [userId]);
-            return res.rows;
+            const [created, people] = await Promise.all([
+                pool.query("SELECT * FROM get_my_course($1)", [userId]),
+                pool.query("SELECT * FROM get_user_course($1)", [userId])
+            ]);
+
+            return {
+                created : created.rows,
+                people : people.rows
+            };
             
         } catch (error) {
             
@@ -97,13 +103,15 @@ export const coursesServices = {
 
     update: async (courseId, userId, { title, description, photo, game, category, isPublic, modules }) => {
 
+        console.log("UPDATE PARAMS →", { courseId, userId, title, description, photo, game, category, isPublic })
+
         const client = await pool.connect();
 
         try {   
 
             await client.query("BEGIN");
             
-            const queryCourse = "SELECT update_course($1, $2, $3, $4, $5, $6, $7, $8) as id";
+            const queryCourse = "SELECT update_course($1, $2, $3, $4, $5, $6::uuid, $7::uuid, $8) as id";
             const resCourse = await client.query(queryCourse, [courseId, userId, title, description, photo , game, category, isPublic])
 
             const updateId = await resCourse.rows[0].id;
