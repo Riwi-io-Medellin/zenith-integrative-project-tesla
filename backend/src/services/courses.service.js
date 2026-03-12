@@ -53,15 +53,15 @@ export const coursesServices = {
 
     },
 
-    create: async (userId, { title, description, photo, isPublic, category, game, modules }) => {
+    create: async (userId, {title, description, photo, isPublic, category, game, modules}) => {
 
         const client = await pool.connect();
         
         try {
             await client.query("BEGIN");
 
-            const queryCourse = "SELECT create_course ($1, $2, $3, $4, $5, $6, $7 ) as id";
-            const resCourse = await client.query(queryCourse, [userId, title, description, photo, isPublic,  category, game]);
+            const queryCourse = "SELECT create_course ($1, $2, $3, $4, $5::uuid, $6::uuid, $7 ) as id";
+            const resCourse = await client.query(queryCourse, [userId, title, description, photo, game, category, isPublic]);
             
             const newCourseId = resCourse.rows[0].id;
 

@@ -107,7 +107,7 @@ export const coursesControllers = {
 
             }
 
-            const createdCourse = await coursesServices.create(userId, title, description, photo, isPublic,  category, game, modules);
+            const createdCourse = await coursesServices.create(userId, { title, description, photo, isPublic,  category, game, modules});
 
             res.status(201).json({
                 
