@@ -6,22 +6,6 @@ const footerAvatar = document.querySelector(".footer__avatar"); // Referencia al
 
 const port = "http://127.0.0.1:4000"; // URL base para las peticiones al backend.
 
-fetch("../partials/navbar.html")
-  .then(response => response.text())
-  .then(data => {
-    document.getElementById("footer").innerHTML = data;
-  });
-  
-if (badgeSearch) { // Verifica que exista el input antes de usarlo.
-  badgeSearch.addEventListener("input", (event) => { // Escucha el evento al escribir.
-    const value = event.target.value.trim().toLowerCase(); // Normaliza el texto ingresado.
-
-    badgeCards.forEach((card) => { // Recorre todos los badges.
-      const title = card.dataset.badge.toLowerCase(); // Obtiene el nombre del badge.
-      card.style.display = title.includes(value) ? "flex" : "none"; // Muestra u oculta segun coincidencia.
-    });
-  });
-}
 
 if (avatarInput && avatarLabel) { // Valida que existan input y label.
   avatarInput.addEventListener("change", (event) => { // Escucha cuando se selecciona archivo.
