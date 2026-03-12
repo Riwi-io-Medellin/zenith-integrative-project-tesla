@@ -5,7 +5,7 @@ const profile = async (userId) => {
     // const userId = req.cookies.user_session; // Sacamos el ID de la cookie segura
 
     const query = `
-        SELECT u.full_name,u.email, profile.description, profile.language, profile.photo
+        SELECT u.full_name,u.email, profile.description, profile.language, profile.photo, profile.phone, profile.country
         FROM users u
         LEFT JOIN profile ON u.id = profile.id
         WHERE u.id = $1

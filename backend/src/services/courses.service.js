@@ -6,19 +6,47 @@ export const coursesServices = {
 
         try {
 
-            const [created, people] = await Promise.all([
-                pool.query("SELECT * FROM get_my_course($1)", [userId]),
-                pool.query("SELECT * FROM get_user_course($1)", [userId])
-            ]);
-
-            return {
-                created : created.rows,
-                people : people.rows
-            };
+            const query = "SELECT * FROM get_user_course ($1)";
+            const res = await pool.query(query, [userId]);
+            return res.rows;
             
         } catch (error) {
             
             console.error("Error to get the courses of the user", error);
+            throw error;
+
+        }
+
+    },
+
+    getC: async () => {
+
+        try {
+        
+            const query = "SELECT id, name FROM course_category ORDER BY name ASC";
+            const res = await pool.query(query);
+            return res.rows;
+
+        } catch (error) {
+            
+            console.error("Error to get the categories of course_category", error);
+            throw error;
+
+        }
+
+    },
+
+    getG: async () => {
+
+        try {
+        
+            const query = "SELECT id, name FROM game_catalog ORDER BY name ASC";
+            const res = await pool.query(query);
+            return res.rows;
+
+        } catch (error) {
+            
+            console.error("Error to get the categories of game_catalog", error);
             throw error;
 
         }

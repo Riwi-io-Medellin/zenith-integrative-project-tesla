@@ -122,7 +122,7 @@ if (loginForm) {
 
                 // Redirect after short delay
                 setTimeout(() => {
-                    window.location.href = "../../templates/user/profile.html";
+                    window.location.href = "../../templates/dashboard/dashboard.html";
                 }, 1500);
 
             } else {

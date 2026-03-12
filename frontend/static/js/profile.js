@@ -64,11 +64,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             // 2. Rol/Lenguaje
             const rolElem = document.getElementById("rol_profile");
-            if (rolElem) rolElem.textContent = data.lenguage || "Developer";
+            if (rolElem) rolElem.textContent = data.language || "Developer";
 
             // 3. Descripción
             const descElem = document.getElementById("description_profile");
             if (descElem) descElem.textContent = data.description || "Sin descripción.";
+
+            
 
             // 4. Iniciales del Avatar
             const avatarElem = document.getElementById("avatar_profile");
@@ -159,7 +161,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                 // Actualizamos nombre y descripción
                 document.getElementById("name_profile").textContent = user.full_name;
                 document.getElementById("description_profile").textContent = user.description || "Sin descripción";
-                
+                document.getElementById("rol_profile").textContent = user.language ;
+                const phoneElem = document.getElementById("phone");
+                if (phoneElem) phoneElem.textContent = user.phone;
+
+                const countryElem = document.getElementById("country");
+                if (countryElem) countryElem.textContent = user.country;
+
                 // --- LÓGICA DEL AVATAR (MOSTRAR U OCULTAR) ---
                 const mainImg = document.getElementById("main_avatar_img");
                 const mainSpan = document.getElementById("avatar_profile");
@@ -181,9 +189,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 document.getElementById("edit_name").value = user.full_name || "";
                 document.getElementById("edit_email").value = user.email || "";
                 document.getElementById("edit_description").value = user.description || "";
-                document.getElementById("edit_lenguage").value = user.lenguage || "";
+                document.getElementById("edit_lenguage").value = user.language || "";
                 document.getElementById("edit_phone").value = user.phone || "";
                 document.getElementById("edit_country").value = user.country || "";
+
+        
             }
         } catch (err) { 
             console.error("Error al cargar datos:", err); 
@@ -211,7 +221,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             full_name: document.getElementById("edit_name").value,
             email: document.getElementById("edit_email").value,
             description: document.getElementById("edit_description").value,
-            lenguage: document.getElementById("edit_lenguage").value,
+            language: document.getElementById("edit_lenguage").value,
             phone: document.getElementById("edit_phone").value,
             country: document.getElementById("edit_country").value,
             // Si subió una foto nueva mandamos esa, si no, mandamos lo que ya había

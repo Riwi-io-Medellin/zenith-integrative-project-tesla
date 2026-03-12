@@ -10,43 +10,73 @@
         <link rel="stylesheet" href="../../static/css/style.css">
         <link rel="stylesheet" href="../../static/css/profile.css">
 </head>
-
-<body style="background-color: rgb(232,228, 222, 0.662);">
+<body class="b">
     <main class="page" id="profileView">
-        <section class="profile">
-            <button class="profile-edit" type="checkbox" id="edit_profile">Edit Profile</button>
-                <div class="avatar-box">
-                    <label class="avatar" >
-                        <img id="main_avatar_img" src="" style="display:none; width:100%; height:100%; border-radius:10%; object-fit:cover;">
-                        <span id="avatar_profile">AC</span>
-                    </label>
+      <section class="profile">
+        <button class="profile-edit" type="checkbox" id="edit_profile">Edit Profile</button>
+        <div class="avatar-box">
+          <label class="avatar" >
+            <img id="main_avatar_img" src="" style="display:none; width:100%; height:100%; border-radius:10%; object-fit:cover;">
+            <span id="avatar_profile">AC</span>
+          </label>
+        </div>
+        <div class="profile-info">
+          <div class="name-row">
+            <h1 id="name_profile"> </h1>
+            <span class="chip text-white" id="rol_profile"></span>
+          </div>
+          <p id="description_profile" class="text-white">
+            
+          </p>
+          <div class="stats">
+            <div>
+              <span class="label text-white" >Phone</span>
+              <span class="value" id="phone"></span>
+            </div>
+            <div>
+              <span class="label text-white">Country</span>
+              <span class="value " id="country"></span>
+            </div>
+            <div>
+              <span class="label text-white">Achievements</span>
+              <span class="value text-white" id="achievements"></span>
+            </div>
+            <div>
+              <span class="label text-white">Total Points</span>
+              <span class="value text-white" id="points"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="trophy-head">
+          <div class="trophy-icon">
+            <i class="bi bi-award"></i>
+          </div>
+          <h2 class="text-white">Featured Trophy</h2>
+        </div>
+        <article class="card trophy ">
+          <div class="trophy-body ">
+            <div>
+              <div class="trophy-desc">
+                <div class="trophy-badge-wrap">
+                  <i class="trophy-badge bi bi-award insignia" id="insignia"></i>
                 </div>
-                <div class="profile-info">
-                    <div class="name-row">
-                        <h2 id="name_profile">Alex Chen</h2>
-                        <span class="chip" id="rol_profile">Expert Developer</span>
-                    </div>
-                    <p id="description_profile">
-                        Developer Training
-                    </p>
-                    <div class="stats">
-                        <div>
-                            <span class="label" >Global Rank</span>
-                            <span class="value" id="rank">#128</span>
-                        </div>
-                        <div>
-                            <span class="label">Total Points</span>
-                            <span class="value" id="points">15,420</span>
-                        </div>
-                        <div>
-                            <span class="label">Achievements</span>
-                            <span class="value" id="achievements">42</span>
-                        </div>
-                        <div>
-                            <span class="label">Contribution Streak</span>
-                            <span class="value" id="streak">18 Days</span>
-                        </div>
-                    </div>
+                <div class="trophy-content">
+                  <span class="kicker">Legendary Achievement</span>
+                  <h3 id="name_insignia" class="name-insignia text-white"></h3>
+
+                  <div class="tags">
+                    <span class="tag-label text-white">Earned On</span>
+                    <span class="tag-label text-white">Rarity</span>
+                    <span class="tag-label text-white">Points Gained</span>
+                  </div>
+                  <div class="tags values">
+                    <span class="tag-value text-white"></span>
+                    <span class="tag-value text-white"></span>
+                    <span class="tag-value text-white"></span>
+                  </div>
                 </div>
         </section>
 
@@ -88,109 +118,81 @@
                 </div>
             </article>
 
-            <article class="card activity">
-                <h2>Recent Activity</h2>
-                <ul class="list">
-                    <li>Earned +50 XP for PR Review</li>
-                    <li>Legendary Achievement</li>
-                    <li>2 hours ago</li>
-                    <li>Unlocked React Pro badge</li>
-                    <li>Yesterday, 4:15 PM</li>
-                    <li>Logged in from San Francisco</li>
-                    <li>Aug 12, 10:30 AM</li>
-                </ul>
-            </article>
-        </section>
+        <article class="card activity">
+          <h2 class="text-white">Recent Activity</h2>
+          <ul class="list text-white" id="activityList">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+          </ul>
+        </article>
+      </section>
 
-        <section class="card">
-            <div class="card-head">
-                <h2>Earned Badges</h2>
-                <button class="link" type="button">View All 42 Badges</button>
-            </div>
-            <div class="badges" id="badgeGrid">
-                <div class="badge" data-badge="HTML Master" id="cat_insignia">
-                    <span class="badge-icon">
-                        <i class="bi bi-terminal" id="img_insignia"></i>
-                    </span>
-                    <p id="name_insignia">HTML Master</p>
-                    <small id="description_insignia">Tier 5 Complete</small>
-                </div>
-                <div class="badge" data-badge="CSS Ninja">
-                    <span class="badge-icon">
-                        <i class="bi bi-palette"></i>
-                    </span>
-                    <p>CSS Ninja</p>
-                    <small>Legendary Tier</small>
-                </div>
-                <div class="badge" data-badge="JS Architect">
-                    <span class="badge-icon">
-                        <i class="bi bi-braces"></i>
-                    </span>
-                    <p>JS Architect</p>
-                    <small>Top 5% Performer</small>
-                </div>
-                <div class="badge" data-badge="React Pro">
-                    <span class="badge-icon">
-                        <i class="bi bi-rocket-takeoff"></i>
-                    </span>
-                    <p>React Pro</p>
-                    <small>Earned 2 months ago</small>
-                </div>
-                <div class="badge" data-badge="SQL Expert">
-                    <span class="badge-icon">
-                        <i class="bi bi-database"></i>
-                    </span>
-                    <p>SQL Expert</p>
-                    <small>Tier 3 Mastery</small>
-                </div>
-                <div class="badge" data-badge="Bug Hunter">
-                    <span class="badge-icon">
-                        <i class="bi bi-shield-lock"></i>
-                    </span>
-                    <p>Bug Hunter</p>
-                    <small>50 Issues Solved</small>
-                </div>
-                <div class="badge" data-badge="Cloud Native">
-                    <span class="badge-icon">
-                        <i class="bi bi-cloud"></i>
-                    </span>
-                    <p>Cloud Native</p>
-                    <small>AWS Specialist</small>
-                </div>
-                <div class="badge" data-badge="Hidden Achievement">
-                    <span class="badge-icon">
-                        <i class="bi bi-lock"></i>
-                    </span>
-                    <p>???</p>
-                    <small>Hidden Achievement</small>
-                </div>
-            </div>
-        </section>
+      <section class="card">
+        <div class="card-head">
+          <h2 class="text-white">Earned Badges</h2>
+          <button class="link" type="button">View All Badges</button>
+        </div>
+        <div class="badges" id="badgeGrid">
+          <div class="badge" data-badge="HTML Master" id="cat_insignia">
+            <span class="badge-icon">
+              <i class="bi bi-terminal" id="img_insignia"></i>
+            </span>
+            <p id="name_insignia " class="text-white">HTML Master</p>
+            <small id="description_insignia" class="text-white">Tier 5 Complete</small>
+          </div>
+          
+         
+      </section>
     </main>
-      <section id="editSection" style="display: none;" class="edit-profile-body py-5">
-          <div class="container">
-              <div class="row justify-content-center ">
-                  <div class="col-12 col-lg-8  register-box ">
-                      <div class="register-box p-4 cont-left rounded-4">
-                          <h1 class="mb-3 text-center text-white">Edit Profile</h1>
-                          <form id="editProfileForm">
-                            <div class="mb-3">
-                                <label class="text-white">Full Name</label>
-                                <input type="text" id="edit_name" class="form-control bg-transparent text-white border-0 border-bottom rounded-0" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="text-white">Email</label>
-                                <input type="email" id="edit_email" class="form-control bg-transparent text-white border-0 border-bottom rounded-0" required>
-                            </div>
+    <section id="editSection" style="display: none;" class="edit-profile-body py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8">
+                    <div class="register-box p-4 cont-left rounded-4" style="background: rgba(255, 255, 255, 0.05);">
+                        <h1 class="mb-3 text-center text-white">Edit Profile</h1>
+                        <form id="editProfileForm">
+                          <div class="mb-3">
+                              <label class="text-white">Full Name</label>
+                              <input type="text" id="edit_name" class="form-control bg-transparent text-white border-0 border-bottom rounded-0" required>
+                          </div>
+                          <div class="mb-3">
+                              <label class="text-white">Email</label>
+                              <input type="email" id="edit_email" class="form-control bg-transparent text-white border-0 border-bottom rounded-0" required>
+                          </div>
 
                             <div class="mb-3">
                                 <label class="text-white">Description</label>
                                 <textarea id="edit_description" class="form-control bg-transparent text-white border-0 border-bottom rounded-0" rows="3"></textarea>
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="text-white">Lenguage</label> <input type="text" id="edit_lenguage" class="form-control bg-transparent text-white border-0 border-bottom rounded-0">
+                          <div class="row">
+                              <div class="col-md-6 mb-3">
+                                  <label class="text-white">Rol</label> <input type="text" id="edit_lenguage" class="form-control bg-transparent text-white border-0 border-bottom rounded-0">
+                              </div>
+                              <div class="col-md-6 mb-3">
+                                  <label class="text-white">Phone</label>
+                                  <input type="text" id="edit_phone" class="form-control bg-transparent text-white border-0 border-bottom rounded-0">
+                              </div>
+                          </div>
+
+                          <div class="mb-3">
+                              <label class="text-white">Country</label>
+                              <input type="text" id="edit_country" class="form-control bg-transparent text-white border-0 border-bottom rounded-0">
+                          </div>
+
+                              <div class="mb-4">
+                                <label class="form-label text-white">Profile photo</label>
+                                <div class="avatar-box">
+                                  <label class="avatar" for="edit_photo">
+                                    <img id="edit_avatar_preview" src="" style="display:none; width:100%; height:100%; border-radius:50%; object-fit:cover;">
+                                    <span id="edit_avatar_text">PF</span>
+                                  </label> 
+                                  <input id="edit_photo" for ="avatar_profile"class="file" type="file" accept="image/*" />
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="text-white">Phone</label>

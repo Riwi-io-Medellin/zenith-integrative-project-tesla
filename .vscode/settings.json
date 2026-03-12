@@ -4,5 +4,6 @@
     "liveServer.settings.NoBrowser": false,
     "liveServer.settings.fullReload": false,
     "liveServer.settings.cors": false,
-    "github.copilot.chat.summarizeAgentConversationHistory.enabled": true
+    "github.copilot.chat.summarizeAgentConversationHistory.enabled": true,
+    "liveServer.settings.port": 5500
 }

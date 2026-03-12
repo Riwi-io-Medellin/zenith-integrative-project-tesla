@@ -1,14 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DashBoard</title>
-     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="/css/style.css">
+    <title>TechLearn PRO - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../static/css/style.css">
+    <style>
+       /* Contenedor principal de la carta en el dashboard */
+        .card-preview-container {
+            background-color: #0d1117; /* Fondo oscuro como la imagen */
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column; /* Apila los fragmentos uno debajo de otro */
+            gap: 15px; /* Espacio entre el avatar y el texto */
+            height: 500px;
+            min-height: 400px;
+            border: 1px solid #30363d;
+        }
+
+        /* Ajuste específico para que el contenido importado no se rompa */
+        .card-preview-container .avatar-box {
+            align-self: center; /* Centra el círculo del avatar */
+            margin-bottom: 10px;
+        }
+
+        .card-preview-container h3, 
+        .card-preview-container .kicker {
+            text-align: center; /* Centra los títulos del trofeo en la carta */
+            display: block;
+        }
+
+        /* Asegura que las listas de actividad o cursos quepan bien */
+        .card-preview-container .list, 
+        .card-preview-container .card-course {
+            background: #161b22;
+            border-radius: 8px;
+            padding: 10px;
+            list-style: none;
+        }
+    </style>
 </head>
-<body>
-    <h1>DashBoard</h1>
+<body class="b" >
+
+    <main class="container py-5">
+        <header class="mb-5">
+            <h1 class="fw-bold text-white">Panel de Control</h1>
+        </header>
+
+        <div class="row g-4">
+            <div class="col-md-4 d-flex flex-column text-center  gap-4 ">
+                <a href="../../templates/user/profile.html" class="text-decoration-none">
+                    <div class="card-preview-container justify-content-around align-items-center" id="preview-profile">
+                        <p class="text-muted p-4">Cargando estadísticas...</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-4 d-flex flex-column text-center  gap-4 ">
+                <a href="../../templates/user/profile.html" class="text-decoration-none">
+                    <div class="card-preview-container justify-content-around align-items-center" id="preview-activity">
+                        <p class="text-muted p-4">Cargando actividad...</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-4 d-flex flex-column text-center  gap-4 ">
+                <a href="../../templates/user/courser.html" class="text-decoration-none">
+                    <div class="card-preview-container justify-content-around" id="preview-courses">
+                        <p class="text p-4">Cargando progreso...</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer"></div>
+
+    <script src="../../static/js/profile.js"></script>
+    <script src="../../static/js/dashboard.js"></script>
 </body>
 </html>
