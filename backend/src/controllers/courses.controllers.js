@@ -52,7 +52,7 @@ export const coursesControllers = {
             const games = await coursesServices.getG();
 
             res.status(200).json({
-                message: "Games retrie ved sucessfully",
+                message: "Games retrieved sucessfully",
                 data: games
             });
         
@@ -61,6 +61,26 @@ export const coursesControllers = {
             console.error('Error in getGames controller:', error);
             res.status(500).json({ error: "Internal Server Error" });
         
+        }
+
+    },
+
+    getPublic: async (req, res) => {
+
+        try {
+
+            const pCourses = await coursesServices.getP();
+
+            res.status(200).json({
+                message: "Public courses retrieved successfully",
+                data: pCourses
+            });
+            
+        } catch (error) {
+            
+            console.error('Error in getGames controller:', error);
+            res.status(500).json({ error: "Internal Server Error" });
+
         }
 
     },

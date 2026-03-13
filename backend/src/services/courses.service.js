@@ -6,9 +6,15 @@ export const coursesServices = {
 
         try {
 
-            const query = "SELECT * FROM get_user_course ($1)";
-            const res = await pool.query(query, [userId]);
-            return res.rows;
+            const [created, enrolled] = await Promise.all([
+                pool.query("SELECT * FROM get_my_course($1)", [userId]),
+                pool.query("SELECT * FROM get_user_course($1)", [userId])
+            ]);
+
+            return {
+                created: created.rows,
+                enrolled: enrolled.rows
+        };
             
         } catch (error) {
             
@@ -53,34 +59,17 @@ export const coursesServices = {
 
     },
 
-    getC: async () => {
+    getP: async () => {
 
         try {
         
-            const query = "SELECT id, name FROM course_category ORDER BY name ASC";
+            const query = "SELECT * FROM get_public_courses()";
             const res = await pool.query(query);
             return res.rows;
 
         } catch (error) {
             
-            console.error("Error to get the categories of course_category", error);
-            throw error;
-
-        }
-
-    },
-
-    getG: async () => {
-
-        try {
-        
-            const query = "SELECT id, name FROM game_catalog ORDER BY name ASC";
-            const res = await pool.query(query);
-            return res.rows;
-
-        } catch (error) {
-            
-            console.error("Error to get the categories of game_catalog", error);
+            console.error("Error to get the courses of comunity", error);
             throw error;
 
         }
