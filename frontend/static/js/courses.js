@@ -383,7 +383,7 @@ function renderCards(data, index) {
     
     const card = document.createElement("div");
     card.className= "floating-card"
-    const cardId = `card_${courseData.id}`
+    const cardId = `card_${data.course_id}`
 
     const savedPos = JSON.parse(localStorage.getItem(`pos_${card.id}`));
 
@@ -423,6 +423,8 @@ function renderCards(data, index) {
         </div>
     `;
 
+    card.addEventListener("dblclick", () => window.openPlayer(data));
+
     document.body.appendChild(card);
     draggble(card)
 
@@ -452,7 +454,7 @@ function collision(item){
 
 function draggble(item){
 
-    const header = el.querySelector('.card-header-drag');
+    const header = item.querySelector('.card-header-drag');
     let mouseX, mouseY, initialX, initialY;
     const margin = 24, bottomNavHeight = 75, iman = 40;
 
@@ -471,19 +473,19 @@ function draggble(item){
 
             e.preventDefault();
 
-            let diffX = mouseX - initialX;
-            let diffY = mouseY - initialY;
+            let diffX = e.clientX - mouseX;
+            let diffY = e.clientY - mouseY;
 
             mouseX = e.clientX
             mouseY = e.clientY
 
-            let nT = item.offsetTop - diffY;
-            let nL = item.offsetLeft - diffX;
+            let nT = item.offsetTop + diffY;
+            let nL = item.offsetLeft + diffX;
 
             let maxBottom = window.innerHeight - item.offsetHeight - margin - bottomNavHeight;
 
             nT = Math.max(margin, Math.min(nT, maxBottom))
-            nL = Math.max(margin, Math.min(nL, window.innerWidth - item.ofsetWidth - margin))
+            nL = Math.max(margin, Math.min(nL, window.innerWidth - item.offsetWidth - margin))
 
         item.style.top = nT + "px";
         item.style.left = nL + "px";
@@ -511,9 +513,9 @@ function draggble(item){
             if(fL > window.innerWidth - item.offsetWidth - margin - iman) fL = window.innerWidth - item.offsetWidth - margin;
 
                 item.style.top = fT + "px";
-                item.style.left = fT + "px"
+                item.style.left = fL + "px"
             
-                localStorage.setItem(`pos_${item.id}`, JSON.stringify({ x: finalL, y: finalT }));
+                localStorage.setItem(`pos_${item.id}`, JSON.stringify({ x: fL, y: fT }));
             }
 
         }
@@ -571,4 +573,123 @@ async function saveScore({score, gameId, courseId}) {
 
     }
     
+};
+
+window.openPlayer = (data) => {
+
+    currentCourse = data
+    
+    document.querySelectorAll(".floating-card").forEach(c => c.style.display="none");
+
+    title.innerText = data.title;
+    desc.innerText = data.description || "...";
+    cover.src = data.cover_photo || "";
+
+    bad.innerHTML = data.is_mine ? `<span class="bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">MI PROYECTO</span>` : `<span class="bg-slate-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">COMUNIDAD</span>`;
+    const mod = document.getElementById("player-modules"); mod.innerHTML = "";
+
+    console.log({
+        title: document.getElementById("player-title"),
+        desc: document.getElementById("player-desc"),
+        cover: document.getElementById("player-cover"),
+        bad: document.getElementById("player-badges"),
+        mod: document.getElementById("player-modules"),
+        container: document.getElementById("player-container"),
+        closeBtn: document.getElementById("btn-close-player")
+    });
+
+    if(data.modules?.length > 0) {
+        data.modules.forEach((m, i) => mod.innerHTML += `<div class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white transition-colors hover:bg-white/10 flex gap-3 align-items-center"><div class="bg-blue-500 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0">${i+1}</div><h6 class="font-bold m-0 text-sm">${m.title || "Módulo "+(i+1)}</h6></div>`);
+    } else mod.innerHTML = "<p class='text-white/50 text-xs'>No hay lecciones.</p>";
+
+    container.classList.add("visible");
+    closeBtn.style.display="block";
+
+    initMiniGame();
+
+};
+
+window.closePlayer = () => { 
+    document.getElementById("game-iframe").src = "about:blank"; 
+    document.getElementById("player-container").classList.remove("visible"); 
+    document.getElementById("btn-close-player").style.display="none"; 
+    document.querySelectorAll(".floating-card").forEach(c => c.style.display="flex"); 
+};
+
+closeBtn.addEventListener("click", closePlayer);
+
+window.initMiniGame = () => {
+    const iframe = document.getElementById("game-iframe");
+    const status = document.getElementById("game-status");
+    if (iframe) {
+        status.innerText = "Recargando actividad...";
+
+        iframe.src = `../../games/${currentCourse.game_src}/typeZenith.html`;
+        setTimeout(() => { status.innerText = ""; }, 1000);
+    }
+};
+
+window.searchCourse = (query) => {
+
+    const results = publicCourses.filter(c =>
+
+        c.title.toLowerCase().includes(query.toLowerCase()) ||
+        c.description.toLowerCase().includes(query.toLowerCase())
+        
+    );
+    renderResults(results);
+}
+
+function renderResults(results){
+
+    const existing = document.getElementById("search-dropdown");
+    if(existing) existing.remove();
+
+    if(results.length === 0) return;
+
+    const dropdown = document.createElement("div");
+    dropdown.id = "search-dropdown";
+    dropdown.className = `
+        absolute bottom-full mb-2 left-0 w-[320px] 
+        bg-slate-900/95 backdrop-blur-xl border border-white/10 
+        rounded-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)] 
+        overflow-hidden z-[9000] max-h-[400px] overflow-y-auto
+    `;
+
+    dropdown.innerHTML = results.map(c => `
+        <div class="flex gap-3 p-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0">
+            <img 
+                src="${c.cover_photo || ''}" 
+                onerror="this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=200&q=60'"
+                class="w-14 h-14 rounded-xl object-cover shrink-0"
+            />
+            <div class="flex flex-col justify-between flex-1 min-w-0">
+                <div>
+                    <p class="text-white font-bold text-sm truncate">${c.title}</p>
+                    <p class="text-white/50 text-xs truncate">${c.description || ''}</p>
+                </div>
+                <div class="flex items-center justify-between mt-1">
+                    <span class="text-white/30 text-[10px]">${c.author_name || ''}</span>
+                    <button 
+                        onclick="joinCourse('${c.course_id}')"
+                        class="bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-400 text-[10px] font-bold px-3 py-1 rounded-full border border-emerald-500/20 transition-colors pointer-events-auto">
+                        + Join
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    const searchWrapper = document.querySelector(".search");
+    searchWrapper.style.position = "relative";
+    searchWrapper.appendChild(dropdown);
+
+    setTimeout(() => {
+        document.addEventListener("click", (e) => {
+            if(!dropdown.contains(e.target)){
+                dropdown.remove();
+            }
+        }, { once: true });
+    }, 0);
+
 }
