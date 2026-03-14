@@ -1,46 +1,116 @@
+const port = "http://127.0.0.1:4000/api/courses";
+
 /**
- * Importa múltiples fragmentos de un archivo externo y los une en un contenedor.
- * @param {string} urlArchivo - Ruta al HTML (ej: '../../templates/user/profile.html')
- * @param {Array} selectores - Lista de clases o IDs (ej: ['.avatar', '.name-row'])
- * @param {string} idDestino - ID del contenedor en el dashboard
+ * Imports multiple fragments from an external HTML file into a container.
+ * @param {string} fileUrl - Path to the HTML file
+ * @param {Array} selectors - List of classes or IDs to extract
+ * @param {string} targetId - ID of the destination container
  */
-async function importarMultiplesFragmentos(urlArchivo, selectores, idDestino) {
-    const contenedorDestino = document.getElementById(idDestino);
-    
+async function importFragments(fileUrl, selectors, targetId) {
+    const targetContainer = document.getElementById(targetId);
+
+    if (!targetContainer) return;
+
     try {
-        const response = await fetch(urlArchivo);
+        const response = await fetch(fileUrl);
+
+        if (!response.ok) {
+            console.warn(`File not found: ${fileUrl}`);
+            return;
+        }
+
         const htmlText = await response.text();
         const parser = new DOMParser();
         const doc = parser.parseFromString(htmlText, 'text/html');
 
-        // Limpiamos el contenedor antes de inyectar
-        contenedorDestino.innerHTML = '';
+        targetContainer.innerHTML = '';
 
-        // Recorremos cada selector que pediste
-        selectores.forEach(selector => {
-            const elementoOrigen = doc.querySelector(selector);
-            if (elementoOrigen) {
-                // Clonamos y añadimos al contenedor
-                const clon = elementoOrigen.cloneNode(true);
-                contenedorDestino.appendChild(clon);
+        selectors.forEach(selector => {
+            const sourceElement = doc.querySelector(selector);
+            if (sourceElement) {
+                const clone = sourceElement.cloneNode(true);
+                targetContainer.appendChild(clone);
             } else {
-                console.warn(`Selector "${selector}" no encontrado en ${urlArchivo}`);
+                console.warn(`Selector "${selector}" not found in ${fileUrl}`);
             }
         });
 
     } catch (error) {
-        console.error(`Error cargando fragmentos de ${urlArchivo}:`, error);
-        contenedorDestino.innerHTML = '<p class="text-danger">Error de carga</p>';
+        console.error(`Error loading fragments from ${fileUrl}:`, error);
+        targetContainer.innerHTML = '<p style="color:#ef4444; font-size:13px;">Load error</p>';
     }
 }
 
-// --- ASÍ ES COMO DEBES LLAMARLAS AHORA ---
+// Fetch courses directly from backend
+async function loadDashboardCourses() {
+    try {
+        const res = await fetch(`${port}/`, {
+            method: "GET",
+            credentials: "include",
+            headers: { "Accept": "application/json" }
+        });
 
-// Carta 1: Recompensa (Traemos el avatar y el trofeo destacado)
-importarMultiplesFragmentos('../../templates/user/profile.html', ['.avatar', '.insignia','.name-insignia','.link'], 'preview-profile');
+        if (res.status === 401) return;
+        if (!res.ok) return;
 
-// Carta 2: Actividad (Traemos la racha de contribución y la lista de actividad)
-importarMultiplesFragmentos('../../templates/user/streak.html', ['.stats', '.activity'], 'preview-activity');
+        const data = await res.json();
+        const created = data.data.created || [];
+        const enrolled = data.data.enrolled || [];
+        const all = [...created, ...enrolled];
 
-// Carta 3: Continuar (Traemos el nombre del usuario y la lista de cursos)
-importarMultiplesFragmentos('../../templates/user/courser.html', ['.cursos','.module','.btn-continue'], 'preview-courses');
+        const container = document.getElementById('preview-courses');
+        if (!container) return;
+
+        if (all.length === 0) {
+            container.innerHTML = `
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:8px; opacity:0.4;">
+                    <i class="bi bi-mortarboard" style="font-size:32px; color:#34d399;"></i>
+                    <p style="color:#94a3b8; font-size:13px; margin:0;">No courses yet</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = all.map(c => {
+            const progress = c.progress !== undefined ? c.progress : (c.is_mine ? 100 : 0);
+            const color = progress === 100 ? '#34d399' : progress > 0 ? '#06f9f9' : 'rgba(148,163,184,0.4)';
+            const label = progress === 100 ? 'Completed' : progress > 0 ? 'In progress' : 'Not started';
+            return `
+                <div class="course-row">
+                    <div class="course-icon">
+                        <i class="bi bi-mortarboard-fill" style="color:#34d399; font-size:13px;"></i>
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-size:12px; color:white; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.title}</div>
+                        <div style="font-size:10px; color:rgba(148,163,184,0.45); margin-top:2px;">${label}</div>
+                        <div class="prog-bar"><div class="prog-fill" style="width:${progress}%;"></div></div>
+                    </div>
+                    <span style="font-size:10px; font-weight:700; color:${color}; flex-shrink:0;">${progress}%</span>
+                </div>
+            `;
+        }).join('');
+
+    } catch (error) {
+        console.error("Error loading dashboard courses:", error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    // Card 1: Profile — avatar and name
+    importFragments(
+        '../user/profile.html',
+        ['.avatar-box', '.name-row', '.insignia'],
+        'preview-profile'
+    );
+
+    // Card 2: Activity — stats and recent activity
+    importFragments(
+        '../user/profile.html',
+        ['.stats', '.activity'],
+        'preview-activity'
+    );
+
+    // Card 3: Courses — direct backend fetch
+    loadDashboardCourses();
+
+});

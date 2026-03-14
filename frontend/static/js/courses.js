@@ -585,25 +585,17 @@ window.openPlayer = (data) => {
     desc.innerText = data.description || "...";
     cover.src = data.cover_photo || "";
 
-    bad.innerHTML = data.is_mine ? `<span class="bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">MI PROYECTO</span>` : `<span class="bg-slate-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">COMUNIDAD</span>`;
-    const mod = document.getElementById("player-modules"); mod.innerHTML = "";
-
-    console.log({
-        title: document.getElementById("player-title"),
-        desc: document.getElementById("player-desc"),
-        cover: document.getElementById("player-cover"),
-        bad: document.getElementById("player-badges"),
-        mod: document.getElementById("player-modules"),
-        container: document.getElementById("player-container"),
-        closeBtn: document.getElementById("btn-close-player")
-    });
+    bad.innerHTML = data.is_mine ? `<span class="bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">MI PROYECT</span>` : `<span class="bg-slate-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">COMUNITY</span>`;
+    const mod = document.getElementById("player-modules"); 
+    mod.innerHTML = "";
 
     if(data.modules?.length > 0) {
         data.modules.forEach((m, i) => mod.innerHTML += `<div class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white transition-colors hover:bg-white/10 flex gap-3 align-items-center"><div class="bg-blue-500 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0">${i+1}</div><h6 class="font-bold m-0 text-sm">${m.title || "Módulo "+(i+1)}</h6></div>`);
     } else mod.innerHTML = "<p class='text-white/50 text-xs'>No hay lecciones.</p>";
 
     container.classList.add("visible");
-    closeBtn.style.display="block";
+    closeBtn.style.display= "block";
+    btnCreate.style.display= "none";
 
     initMiniGame();
 
@@ -612,8 +604,9 @@ window.openPlayer = (data) => {
 window.closePlayer = () => { 
     document.getElementById("game-iframe").src = "about:blank"; 
     document.getElementById("player-container").classList.remove("visible"); 
-    document.getElementById("btn-close-player").style.display="none"; 
-    document.querySelectorAll(".floating-card").forEach(c => c.style.display="flex"); 
+    closeBtn.style.display = "none";
+    btnCreate.style.display = "block";
+    document.querySelectorAll(".floating-card").forEach(c => c.style.display=""); 
 };
 
 closeBtn.addEventListener("click", closePlayer);
