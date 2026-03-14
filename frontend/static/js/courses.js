@@ -1,4 +1,4 @@
-import { btnCreate, modalCourses, coverCourseIn, previewImg, placeHolder, courseTitle, courseDesc, moduleCont, btnModule, coursePublic, cateSelect, gameSelect, submitBtn, modalTitle, workS, desc, title, bad, cover, container, closeBtn} from "./elements.js";
+import { btnCreate, modalCourses, coverCourseIn, previewImg, placeHolder, courseTitle, courseDesc, moduleCont, btnModule, coursePublic, cateSelect, gameSelect, submitBtn, modalTitle, workS, desc, title, bad, cover, container, closeBtn, iframe, status, existing} from "./elements.js";
 
 const port = "http://127.0.0.1:4000/api/courses";
 
@@ -436,7 +436,7 @@ function renderCards(data, index) {
     });
 
     document.body.appendChild(card);
-    draggble(card)
+    draggable(card)
 
 }
 
@@ -462,40 +462,23 @@ function collision(item){
 
 }
 
-function draggble(item){
-
+function draggable(item){
     const header = item.querySelector('.card-header-drag');
     let mouseX, mouseY, initialX, initialY;
     const margin = 24, bottomNavHeight = 75, iman = 40;
 
-    header.onmousedown = (e) => {
+    function onMove(clientX, clientY) {
+        let diffX = clientX - mouseX;
+        let diffY = clientY - mouseY;
+        mouseX = clientX;
+        mouseY = clientY;
 
-        e.preventDefault();
-        item.style.transition = "none"
+        let nT = item.offsetTop + diffY;
+        let nL = item.offsetLeft + diffX;
+        let maxBottom = window.innerHeight - item.offsetHeight - margin - bottomNavHeight;
 
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-
-        initialX = item.offsetLeft;
-        initialY = item.offsetTop
-
-        document.onmousemove = (e) => {
-
-            e.preventDefault();
-
-            let diffX = e.clientX - mouseX;
-            let diffY = e.clientY - mouseY;
-
-            mouseX = e.clientX
-            mouseY = e.clientY
-
-            let nT = item.offsetTop + diffY;
-            let nL = item.offsetLeft + diffX;
-
-            let maxBottom = window.innerHeight - item.offsetHeight - margin - bottomNavHeight;
-
-            nT = Math.max(margin, Math.min(nT, maxBottom))
-            nL = Math.max(margin, Math.min(nL, window.innerWidth - item.offsetWidth - margin))
+        nT = Math.max(margin, Math.min(nT, maxBottom));
+        nL = Math.max(margin, Math.min(nL, window.innerWidth - item.offsetWidth - margin));
 
         item.style.top = nT + "px";
         item.style.left = nL + "px";
@@ -563,10 +546,8 @@ function draggble(item){
         onMove(touch.clientX, touch.clientY);
     }, { passive: false });
 
-    header.addEventListener('touchend', () => {
-        onEnd();
-    });
-}};
+    header.addEventListener('touchend', () => { onEnd(); });
+};
 
 function workSpace(){
     if(courseData || publicCourses.length > 0){
@@ -574,7 +555,7 @@ function workSpace(){
     }else{
         workS.classList.remove("dashboard-mode")
     }
-}
+};
 
 window.addEventListener('message', async (e) => {
     if(e.data.type === 'GAME_OVER'){
@@ -632,16 +613,6 @@ window.openPlayer = (data) => {
     bad.innerHTML = data.is_mine ? `<span class="bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">MI PROYECTO</span>` : `<span class="bg-slate-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">COMUNIDAD</span>`;
     const mod = document.getElementById("player-modules"); mod.innerHTML = "";
 
-    console.log({
-        title: document.getElementById("player-title"),
-        desc: document.getElementById("player-desc"),
-        cover: document.getElementById("player-cover"),
-        bad: document.getElementById("player-badges"),
-        mod: document.getElementById("player-modules"),
-        container: document.getElementById("player-container"),
-        closeBtn: document.getElementById("btn-close-player")
-    });
-
     if(data.modules?.length > 0) {
         data.modules.forEach((m, i) => mod.innerHTML += `<div class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white transition-colors hover:bg-white/10 flex gap-3 align-items-center"><div class="bg-blue-500 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0">${i+1}</div><h6 class="font-bold m-0 text-sm">${m.title || "Módulo "+(i+1)}</h6></div>`);
     } else mod.innerHTML = "<p class='text-white/50 text-xs'>No hay lecciones.</p>";
@@ -654,8 +625,8 @@ window.openPlayer = (data) => {
 };
 
 window.closePlayer = () => { 
-    document.getElementById("game-iframe").src = "about:blank"; 
-    document.getElementById("player-container").classList.remove("visible"); 
+    iframe.src = "about:blank"; 
+    container.classList.remove("visible"); 
     closeBtn.style.display = "none"
     document.querySelectorAll(".floating-card").forEach(c => c.style.display=""); 
 };
@@ -663,14 +634,14 @@ window.closePlayer = () => {
 closeBtn.addEventListener("click", closePlayer);
 
 window.initMiniGame = () => {
-    const iframe = document.getElementById("game-iframe");
-    const status = document.getElementById("game-status");
+
     if (iframe) {
         status.innerText = "Recargando actividad...";
 
         iframe.src = `../../games/${currentCourse.game_src}/index.html`;
         setTimeout(() => { status.innerText = ""; }, 1000);
     }
+
 };
 
 window.searchCourse = (query) => {
@@ -689,7 +660,6 @@ window.searchCourse = (query) => {
 
 function renderResults(results){
 
-    const existing = document.getElementById("search-dropdown");
     if(existing) existing.remove();
 
     if(results.length === 0) return;

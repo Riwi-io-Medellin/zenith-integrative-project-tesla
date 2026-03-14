@@ -28,7 +28,7 @@ export const findOrCreateGoogleUser = async (profile) => {
 
     // 3 crear profile
     await pool.query(
-      `INSERT INTO profile(user_id) VALUES($1)`,
+      `INSERT INTO profile(id) VALUES($1)`,
       [user.id]
     );
 

@@ -6,38 +6,41 @@ const port = "http://127.0.0.1:4000/api";
  * @param {Array} selectors - List of classes or IDs to extract
  * @param {string} targetId - ID of the destination container
  */
-async function importFragments(fileUrl, selectors, targetId) {
-    const targetContainer = document.getElementById(targetId);
 
-    if (!targetContainer) return;
-
+async function loadDashboardProfile() {
     try {
-        const response = await fetch(fileUrl);
-
-        if (!response.ok) {
-            console.warn(`File not found: ${fileUrl}`);
-            return;
-        }
-
-        const htmlText = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlText, 'text/html');
-
-        targetContainer.innerHTML = '';
-
-        selectors.forEach(selector => {
-            const sourceElement = doc.querySelector(selector);
-            if (sourceElement) {
-                const clone = sourceElement.cloneNode(true);
-                targetContainer.appendChild(clone);
-            } else {
-                console.warn(`Selector "${selector}" not found in ${fileUrl}`);
-            }
+        const res = await fetch(`${port}/user/profile`, {
+            method: "GET",
+            credentials: "include",
+            headers: { "Accept": "application/json" }
         });
 
-    } catch (error) {
-        console.error(`Error loading fragments from ${fileUrl}:`, error);
-        targetContainer.innerHTML = '<p style="color:#ef4444; font-size:13px;">Load error</p>';
+        if(!res.ok) return;
+
+        const data = await res.json();
+        const container = document.getElementById('preview-profile');
+        if(!container) return;
+
+        const initials = data.full_name?.split(" ").map(n => n[0]).join("").slice(0,2).toUpperCase() || "?";
+
+        container.innerHTML = `
+            <div style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+                <div class="avatar" style="margin-bottom:10px;">
+                    ${data.photo 
+                        ? `<img src="${data.photo}" style="width:100%; height:100%; object-fit:cover;">` 
+                        : `<span>${initials}</span>`
+                    }
+                </div>
+                <div class="name-row" style="justify-content:center;">
+                    <h1 style="font-size:15px; font-weight:700; color:white; margin:0;">${data.full_name || ''}</h1>
+                    <span class="chip">${data.language || ''}</span>
+                </div>
+                <i class="bi bi-award insignia" id="insignia" style="font-size:28px; color:#f59e0b; margin-top:10px;"></i>
+            </div>
+        `;
+
+    } catch(error) {
+        console.error("Error loading dashboard profile:", error);
     }
 }
 
@@ -131,16 +134,12 @@ async function loadDashboardStreak() {
 document.addEventListener('DOMContentLoaded', () => {
 
     // Card 1: Profile — avatar and name
-    importFragments(
-        '../../templates/user/profile.html',
-        ['.avatar-box', '.name-row', '.insignia'],
-        'preview-profile'
-    );
+    loadDashboardProfile();
 
     // Card 2: Streak — direct backend fetch
     loadDashboardStreak();
 
     // Card 3: Courses — direct backend fetch
-    loadDashboardCourses();
+    loadDashboardCourses(); 
 
 });

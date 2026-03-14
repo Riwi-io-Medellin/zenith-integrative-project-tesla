@@ -50,3 +50,12 @@ export const bad = document.getElementById("player-badges");
 export const mod = document.getElementById("player-modules");
 export const container = document.getElementById("player-container");
 export const closeBtn = document.getElementById("btn-Close");
+
+//Iframe
+
+export const iframe = document.getElementById("game-iframe");
+export const status = document.getElementById("game-status");
+
+//Search
+
+export const existing = document.getElementById("search-dropdown");

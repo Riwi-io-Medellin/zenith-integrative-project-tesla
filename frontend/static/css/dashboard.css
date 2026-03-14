@@ -64,6 +64,13 @@ body::before {
     height: calc(100% - 48px);
 }
 
+.stat-box {
+    background: rgba(255,255,255,0.04);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+}
+
 .course-row {
     display: flex;
     align-items: center;
@@ -96,16 +103,76 @@ body::before {
     background: linear-gradient(90deg, #34d399, #06f9f9);
 }
 
-/* Override profile styles inside dashboard cards */
-#preview-profile .avatar-box,
-#preview-activity .avatar-box {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 12px;
+/* Profile card overrides */
+#preview-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
-#preview-profile .label,
-#preview-activity .label {
+#preview-profile .avatar-box {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+#preview-profile .avatar {
+    width: 72px !important;
+    height: 72px !important;
+    border-radius: 16px !important;
+    background: rgba(6,249,249,0.1) !important;
+    border: 2px solid rgba(6,249,249,0.25) !important;
+    color: #06f9f9 !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    cursor: pointer !important;
+}
+
+#preview-profile .avatar img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+#preview-profile .name-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+#preview-profile .name-row h1 {
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+}
+
+#preview-profile .chip {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(6,249,249,0.1);
+    border: 1px solid rgba(6,249,249,0.2);
+    color: #06f9f9;
+}
+
+#preview-profile .insignia {
+    display: block;
+    font-size: 28px;
+    color: #f59e0b;
+    text-align: center;
+    margin-top: 10px;
+}
+
+#preview-profile .label {
     font-size: 10px;
     color: rgba(148,163,184,0.5);
     text-transform: uppercase;
@@ -113,14 +180,14 @@ body::before {
     display: block;
 }
 
-#preview-profile .value,
-#preview-activity .value {
-    font-size: 14px;
+#preview-profile .value {
+    font-size: 13px;
     font-weight: 700;
     color: white;
     display: block;
 }
 
+/* Activity overrides */
 #preview-activity h2 {
     font-size: 12px;
     font-weight: 700;

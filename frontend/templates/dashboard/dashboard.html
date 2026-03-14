@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../../static/css/style.css">
     <link rel="stylesheet" href="../../static/css/partials.css">
     <link rel="stylesheet" href="../../static/css/dashboard.css">
+    <link rel="stylesheet" href="../../static/css/profile.css">
 </head>
 <body>
 
@@ -24,7 +25,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
             <!-- Profile card -->
-            <a href="../../templates/user/profile/profile.html" class="no-underline">
+            <a href="../../templates/user/profile.html" class="no-underline">
                 <div class="dash-card card-profile fade-in" style="animation-delay:0.05s;">
                     <div class="card-top">
                         <i class="bi bi-person-fill" style="color:#06f9f9; font-size:14px;"></i>
@@ -37,14 +38,25 @@
             </a>
 
             <!-- Activity card -->
-            <a href="../../templates/user/streak/streak.html" class="no-underline">
+            <a href="../../templates/user/streak.html" class="no-underline">
                 <div class="dash-card card-streak fade-in" style="animation-delay:0.1s;">
                     <div class="card-top">
                         <i class="bi bi-fire" style="color:#fb923c; font-size:14px;"></i>
                         <span>Activity</span>
                     </div>
                     <div class="card-body-dash" id="preview-activity">
-                        <p style="color:rgba(148,163,184,0.4); font-size:13px; text-align:center;">Loading...</p>
+                        <div style="font-size:3rem; font-weight:900; color:#fb923c; text-align:center; line-height:1; margin-bottom:4px;" id="dash-streak">—</div>
+                        <p style="font-size:11px; color:rgba(148,163,184,0.5); text-align:center; margin-bottom:16px;">days in a row</p>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                            <div class="stat-box">
+                                <div style="font-size:16px; font-weight:700; color:#fb923c;" id="dash-xp">—</div>
+                                <div style="font-size:9px; color:rgba(148,163,184,0.5); margin-top:2px;">XP earned</div>
+                            </div>
+                            <div class="stat-box">
+                                <div style="font-size:11px; font-weight:600; color:#94a3b8;" id="dash-last-session">—</div>
+                                <div style="font-size:9px; color:rgba(148,163,184,0.5); margin-top:2px;">Last session</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </a>
@@ -64,15 +76,6 @@
 
         </div>
     </main>
-
-    <div id="footer-container"></div>
-
-    <script type="module">
-        import { loadPartial } from "../../static/js/partials.js";
-        document.addEventListener('DOMContentLoaded', async () => {
-            await loadPartial('footer-container', "../partials/navbar.html");
-        });
-    </script>
 
     <script src="../../static/js/dashboard.js"></script>
 
