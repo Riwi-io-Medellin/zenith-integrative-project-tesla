@@ -17,7 +17,6 @@ export const workS = document.getElementById("main-Body")
 
 //Buttons
 export const btnCreate = document.getElementById("btn-Create");
-export const btnBack = document.getElementById("btn-Close");
 export const btnModule = document.getElementById("add-Module");
 export const submitBtn = document.getElementById("submit-btn");
 
@@ -41,3 +40,13 @@ export const coursePublic = document.getElementById("course-Public");
 
 //Img Form
 export const placeHolder = document.getElementById("bg-Img-Placeholder")
+
+//Player Modal
+
+export const title = document.getElementById("player-title");
+export const desc = document.getElementById("player-desc");
+export const cover = document.getElementById("player-cover");
+export const bad = document.getElementById("player-badges");
+export const mod = document.getElementById("player-modules");
+export const container = document.getElementById("player-container");
+export const closeBtn = document.getElementById("btn-Close");

@@ -9,443 +9,256 @@ const finalScoreContainer = document.getElementById('final-score-container');
 const finalScoreDisplay = document.getElementById('final-score');
 const mobileInput = document.getElementById('mobile-input');
 
-// Configuración de tamaño
 function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
 }
 
-window.addEventListener('resize', resizeCanvas);
+window.addEventListener('resize', () => { resizeCanvas(); if(!state.isRunning) draw(); });
 resizeCanvas();
 
-// Diccionario de palabras de desarrollo (Fragmentos de código reales)
+function scale() { return Math.min(canvas.width, canvas.height) / 300; }
+
 const dictionary = [
-    "function() {}", "const x = 0;", "let i = 0;", "if (true) {", "} else {", 
-    "return null;", "console.log();", "() => {}", "[1, 2, 3]", "item === null", 
-    "import React;", "export default;", "try {", "} catch (e) {", "async () => {", 
-    "await fetch();", "this.props", "[...array]", "{...object}", "arr.map();", 
-    "arr.filter();", "Object.keys()", "Math.random();", "JSON.parse();", 
-    "document.body", "window.onload", "setTimeout();", "class App {", 
-    "<div id=\"app\">", "</div>", "=>", "===", "!==", "&&", "||", "${var}", 
-    "\"hello world\"", "'string'", "x += 1;", "i++", "x ? y : z;", "NaN", 
-    "undefined", "new Promise()", ".then(res =>)", ".catch(err)"
+    "function(){}", "const x=0;", "let i=0;", "if(true){", "}else{",
+    "return null;", "console.log()", "()=>{}", "[1,2,3]", "===null",
+    "import React", "export default", "try{", "}catch(e){", "async()=>{}",
+    "await fetch()", "arr.map()", "arr.filter()", "Object.keys()", "JSON.parse()",
+    "setTimeout()", "new Promise()", ".then(res=>)", ".catch(err)", "NaN",
+    "undefined", "=>", "===", "!==", "&&", "||"
 ];
 
-// Estado del juego
 let state = {
-    isRunning: false,
-    score: 0,
-    asteroids: [],
-    particles: [],
-    lasers: [],
-    floatingTexts: [],
-    stars: [],
-    currentTarget: null,
-    spawnRate: 2000,
-    lastSpawn: 0,
-    gameSpeedMultiplier: 1,
+    isRunning: false, score: 0, asteroids: [], particles: [],
+    lasers: [], floatingTexts: [], stars: [], currentTarget: null,
+    spawnRate: 2000, lastSpawn: 0, gameSpeedMultiplier: 1,
     ship: { x: 0, y: 0, angle: 0 }
 };
 
-// Inicializar estrellas de fondo
 function initStars() {
     state.stars = [];
-    for(let i=0; i<100; i++){
-        state.stars.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            size: Math.random() * 2,
-            speed: Math.random() * 0.5 + 0.1
-        });
-    }
+    for(let i=0; i<80; i++) state.stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 1.5,
+        speed: Math.random() * 0.4 + 0.1
+    });
 }
 
 function startGame() {
+    resizeCanvas();
     state = {
-        isRunning: true,
-        score: 0,
-        asteroids: [],
-        particles: [],
-        lasers: [],
-        floatingTexts: [],
-        stars: state.stars.length ? state.stars : [],
-        currentTarget: null,
-        spawnRate: 2000,
-        lastSpawn: Date.now(),
+        isRunning: true, score: 0, asteroids: [], particles: [],
+        lasers: [], floatingTexts: [], stars: state.stars.length ? state.stars : [],
+        currentTarget: null, spawnRate: 2000, lastSpawn: Date.now(),
         gameSpeedMultiplier: 1,
-        ship: { x: canvas.width / 2, y: canvas.height - 50, angle: 0 }
+        ship: { x: canvas.width / 2, y: canvas.height - 30, angle: 0 }
     };
-    if(state.stars.length === 0) initStars();
-    
-    scoreDisplay.innerText = state.score;
-    menuScreen.classList.add('hidden');
+    if(!state.stars.length) initStars();
+    scoreDisplay.innerText = 0;
+    menuScreen.style.display = 'none';
     mobileInput.focus();
-    
     requestAnimationFrame(gameLoop);
 }
 
 function gameOver() {
     state.isRunning = false;
-
-    window.parent.postMessage({
-        type: 'GAME_OVER',
-        score: state.score,
-        gameId: 'type-zenith'
-    }, '*');
-    
-    menuScreen.classList.remove('hidden');
-    menuTitle.innerText = "¡SISTEMA CAÍDO!";
-    menuTitle.classList.replace('text-cyan-400', 'text-red-500');
-    menuDesc.innerText = "Un error no controlado ha destruido tu nave.";
-    finalScoreContainer.classList.remove('hidden');
+    menuScreen.style.display = 'flex';
+    menuTitle.innerText = "SYSTEM DOWN!";
+    menuTitle.style.color = '#ef4444';
+    menuDesc.innerText = "An unhandled error destroyed your ship.";
+    finalScoreContainer.style.display = 'block';
     finalScoreDisplay.innerText = state.score;
-    startBtn.innerText = "Reiniciar Sistema";
+    startBtn.innerText = "Restart";
+
+    window.parent.postMessage({ type: 'GAME_OVER', score: state.score }, '*');
 }
 
-// Generar un nuevo asteroide
 function spawnAsteroid() {
     const word = dictionary[Math.floor(Math.random() * dictionary.length)];
-    const padding = 150;
+    const s = scale();
+    const padding = 80 * s;
     const x = padding + Math.random() * (canvas.width - padding * 2);
-    
+    const radius = (12 + word.length * 3) * s;
     state.asteroids.push({
-        x: x,
-        y: -50,
-        word: word,
-        typedCount: 0,
-        speed: (0.5 + Math.random() * 0.2) * state.gameSpeedMultiplier,
-        radius: 20 + word.length * 4,
-        vertices: generateAsteroidVertices(20 + word.length * 4)
+        x, y: -40, word, typedCount: 0,
+        speed: (0.4 + Math.random() * 0.2) * state.gameSpeedMultiplier * s,
+        radius,
+        vertices: generateVertices(radius)
     });
 }
 
-// Forma irregular para los asteroides
-function generateAsteroidVertices(radius) {
-    const vertices = [];
-    const points = 8 + Math.floor(Math.random() * 5);
-    for (let i = 0; i < points; i++) {
+function generateVertices(radius) {
+    const verts = [];
+    const points = 7 + Math.floor(Math.random() * 4);
+    for(let i=0; i<points; i++) {
         const angle = (i / points) * Math.PI * 2;
         const r = radius * (0.8 + Math.random() * 0.4);
-        vertices.push({ x: Math.cos(angle) * r, y: Math.sin(angle) * r });
+        verts.push({ x: Math.cos(angle) * r, y: Math.sin(angle) * r });
     }
-    return vertices;
+    return verts;
 }
 
-// Manejo de teclado
 window.addEventListener('keydown', (e) => {
-    if (!state.isRunning) return;
-    
-    // Ignorar teclas de control
-    if (e.ctrlKey || e.altKey || e.metaKey) return;
-    
-    // Permitir que las letras y símbolos se procesen (respetando mayúsculas/minúsculas)
-    const key = e.key;
-    if (key.length === 1) {
-        e.preventDefault(); // Prevenir scroll con espacio o atajos del navegador
-        processInput(key);
-    }
+    if(!state.isRunning) return;
+    if(e.ctrlKey || e.altKey || e.metaKey) return;
+    if(e.key.length === 1) { e.preventDefault(); processInput(e.key); }
 });
 
-// Para móviles (input invisible)
 mobileInput.addEventListener('input', (e) => {
-    if (!state.isRunning) return;
+    if(!state.isRunning) return;
     const val = mobileInput.value;
-    if (val.length > 0) {
-        const key = val.charAt(val.length - 1);
-        processInput(key);
-        mobileInput.value = ''; // Limpiar
-    }
+    if(val.length > 0) { processInput(val.charAt(val.length-1)); mobileInput.value = ''; }
 });
 
 function processInput(key) {
-    // Si no hay objetivo, buscar uno que empiece con la letra presionada
-    if (!state.currentTarget) {
-        let potentialTargets = state.asteroids.filter(a => a.word[0] === key);
-        if (potentialTargets.length > 0) {
-            // Elegir el más cercano a la nave (mayor Y)
-            potentialTargets.sort((a, b) => b.y - a.y);
-            state.currentTarget = potentialTargets[0];
-        }
+    if(!state.currentTarget) {
+        let targets = state.asteroids.filter(a => a.word[0] === key);
+        if(targets.length) { targets.sort((a,b) => b.y - a.y); state.currentTarget = targets[0]; }
     }
-
-    // Si hay un objetivo (nuevo o existente), comprobar la letra
-    if (state.currentTarget) {
-        const target = state.currentTarget;
-        if (target.word[target.typedCount] === key) {
-            // Acierto
-            target.typedCount++;
-            
-            // Disparar láser
-            state.lasers.push({
-                startX: state.ship.x,
-                startY: state.ship.y,
-                targetX: target.x,
-                targetY: target.y,
-                progress: 0
-            });
-
-            // Apuntar nave
-            state.ship.angle = Math.atan2(target.y - state.ship.y, target.x - state.ship.x) + Math.PI/2;
-
-            // Si se completó la palabra
-            if (target.typedCount === target.word.length) {
-                destroyAsteroid(target);
-            }
-        } else {
-            // Fallo (se podría añadir sonido o penalización aquí)
+    if(state.currentTarget) {
+        const t = state.currentTarget;
+        if(t.word[t.typedCount] === key) {
+            t.typedCount++;
+            state.lasers.push({ startX: state.ship.x, startY: state.ship.y, targetX: t.x, targetY: t.y, progress: 0 });
+            state.ship.angle = Math.atan2(t.y - state.ship.y, t.x - state.ship.x) + Math.PI/2;
+            if(t.typedCount === t.word.length) destroyAsteroid(t);
         }
     }
 }
 
 function destroyAsteroid(asteroid) {
-    // Puntos aleatorios de 1 a 10
     const points = Math.floor(Math.random() * 10) + 1;
     state.score += points;
     scoreDisplay.innerText = state.score;
-
-    // Texto flotante de puntos
-    state.floatingTexts.push({
-        x: asteroid.x,
-        y: asteroid.y,
-        text: `+${points}`,
-        life: 1.0
-    });
-
-    // Partículas de explosión
-    for (let i = 0; i < 20; i++) {
+    state.floatingTexts.push({ x: asteroid.x, y: asteroid.y, text: `+${points}`, life: 1.0 });
+    for(let i=0; i<15; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const speed = 2 + Math.random() * 4;
-        state.particles.push({
-            x: asteroid.x,
-            y: asteroid.y,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            life: 1.0,
-            color: Math.random() > 0.5 ? '#22d3ee' : '#a855f7' // Cyan o Purpura
-        });
+        const spd = 1.5 + Math.random() * 3;
+        state.particles.push({ x: asteroid.x, y: asteroid.y, vx: Math.cos(angle)*spd, vy: Math.sin(angle)*spd, life: 1.0, color: Math.random()>0.5 ? '#22d3ee' : '#a855f7' });
     }
-
-    // Eliminar asteroide
     state.asteroids = state.asteroids.filter(a => a !== asteroid);
     state.currentTarget = null;
 }
 
 function update() {
     const now = Date.now();
+    state.gameSpeedMultiplier += 0.00008;
+    state.spawnRate = Math.max(800, 4000 - state.score * 3);
+    if(now - state.lastSpawn > state.spawnRate) { spawnAsteroid(); state.lastSpawn = now; }
 
-    // Aumentar dificultad
-    state.gameSpeedMultiplier += 0.0001;
-    state.spawnRate = Math.max(800, 4000 - (state.score * 3));
+    state.stars.forEach(s => { s.y += s.speed; if(s.y > canvas.height) s.y = 0; });
 
-    // Generar asteroides
-    if (now - state.lastSpawn > state.spawnRate) {
-        spawnAsteroid();
-        state.lastSpawn = now;
-    }
-
-    // Actualizar estrellas
-    state.stars.forEach(star => {
-        star.y += star.speed;
-        if(star.y > canvas.height) star.y = 0;
-    });
-
-    // Actualizar asteroides
-    for (let i = 0; i < state.asteroids.length; i++) {
-        let a = state.asteroids[i];
+    for(let a of state.asteroids) {
         a.y += a.speed;
-
-        // Colisión con la nave o llegar al fondo
-        if (a.y + a.radius > state.ship.y) {
-            gameOver();
-            return;
-        }
+        if(a.y + a.radius > canvas.height - 20) { gameOver(); return; }
     }
 
-    // Actualizar láseres
-    state.lasers.forEach(laser => {
-        laser.progress += 0.15;
-    });
+    state.lasers.forEach(l => l.progress += 0.15);
     state.lasers = state.lasers.filter(l => l.progress < 1);
-
-    // Actualizar partículas
-    state.particles.forEach(p => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life -= 0.02;
-    });
+    state.particles.forEach(p => { p.x += p.vx; p.y += p.vy; p.life -= 0.025; });
     state.particles = state.particles.filter(p => p.life > 0);
-
-    // Actualizar textos flotantes
-    state.floatingTexts.forEach(ft => {
-        ft.y -= 1;
-        ft.life -= 0.02;
-    });
+    state.floatingTexts.forEach(ft => { ft.y -= 0.8; ft.life -= 0.025; });
     state.floatingTexts = state.floatingTexts.filter(ft => ft.life > 0);
-    
-    // Nave vuelve lentamente a apuntar hacia arriba si no hay objetivo
-    if(!state.currentTarget) {
-         state.ship.angle = state.ship.angle * 0.9;
-    }
+    if(!state.currentTarget) state.ship.angle *= 0.9;
 }
 
 function draw() {
-    // Limpiar canvas
-    ctx.fillStyle = '#0f172a'; // bg-slate-900
+    const s = scale();
+    ctx.fillStyle = '#0f172a';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Dibujar estrellas
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = '#fff';
     state.stars.forEach(star => {
-        ctx.globalAlpha = star.speed;
+        ctx.globalAlpha = star.speed * 1.5;
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.size, 0, Math.PI*2);
         ctx.fill();
     });
     ctx.globalAlpha = 1;
 
-    // Dibujar láseres
-    ctx.lineWidth = 3;
-    state.lasers.forEach(laser => {
-        ctx.strokeStyle = '#22d3ee'; // cyan-400
+    ctx.lineWidth = 2 * s;
+    state.lasers.forEach(l => {
+        ctx.strokeStyle = '#22d3ee';
         ctx.beginPath();
-        const currentX = laser.startX + (laser.targetX - laser.startX) * laser.progress;
-        const currentY = laser.startY + (laser.targetY - laser.startY) * laser.progress;
-        const tailX = laser.startX + (laser.targetX - laser.startX) * Math.max(0, laser.progress - 0.2);
-        const tailY = laser.startY + (laser.targetY - laser.startY) * Math.max(0, laser.progress - 0.2);
-        
-        ctx.moveTo(tailX, tailY);
-        ctx.lineTo(currentX, currentY);
+        ctx.moveTo(l.startX + (l.targetX-l.startX)*Math.max(0,l.progress-0.2), l.startY + (l.targetY-l.startY)*Math.max(0,l.progress-0.2));
+        ctx.lineTo(l.startX + (l.targetX-l.startX)*l.progress, l.startY + (l.targetY-l.startY)*l.progress);
         ctx.stroke();
     });
 
-    // Dibujar asteroides
     state.asteroids.forEach(a => {
         ctx.save();
         ctx.translate(a.x, a.y);
-
-        // Aura si es el objetivo
-        if (a === state.currentTarget) {
-            ctx.shadowColor = '#22d3ee';
-            ctx.shadowBlur = 15;
-            ctx.strokeStyle = '#22d3ee';
-        } else {
-            ctx.shadowBlur = 0;
-            ctx.strokeStyle = '#64748b'; // slate-500
-        }
-
-        // Dibujar forma
-        ctx.fillStyle = '#1e293b'; // slate-800
-        ctx.lineWidth = 2;
+        ctx.shadowColor = a === state.currentTarget ? '#22d3ee' : 'transparent';
+        ctx.shadowBlur = a === state.currentTarget ? 10 : 0;
+        ctx.strokeStyle = a === state.currentTarget ? '#22d3ee' : '#64748b';
+        ctx.fillStyle = '#1e293b';
+        ctx.lineWidth = 1.5 * s;
         ctx.beginPath();
         ctx.moveTo(a.vertices[0].x, a.vertices[0].y);
-        for (let i = 1; i < a.vertices.length; i++) {
-            ctx.lineTo(a.vertices[i].x, a.vertices[i].y);
-        }
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
+        for(let i=1; i<a.vertices.length; i++) ctx.lineTo(a.vertices[i].x, a.vertices[i].y);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
 
-        // Dibujar texto
         ctx.shadowBlur = 0;
-        ctx.font = 'bold 16px "Fira Code", monospace';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
+        const fontSize = Math.max(9, 11 * s);
+        ctx.font = `bold ${fontSize}px "Fira Code", monospace`;
+        ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
         const typed = a.word.substring(0, a.typedCount);
         const untyped = a.word.substring(a.typedCount);
-        
-        const typedWidth = ctx.measureText(typed).width;
-        const untypedWidth = ctx.measureText(untyped).width;
-        const totalWidth = typedWidth + untypedWidth;
-
-        let startX = -totalWidth / 2;
-
-        // Parte escrita (Verde)
-        ctx.fillStyle = '#4ade80'; // green-400
-        ctx.textAlign = 'left';
-        ctx.fillText(typed, startX, 0);
-
-        // Parte no escrita (Blanco)
-        ctx.fillStyle = '#ffffff';
-        ctx.fillText(untyped, startX + typedWidth, 0);
-
+        const tw = ctx.measureText(typed).width;
+        const uw = ctx.measureText(untyped).width;
+        const startX = -(tw + uw) / 2;
+        ctx.fillStyle = '#4ade80'; ctx.fillText(typed, startX, 0);
+        ctx.fillStyle = '#fff'; ctx.fillText(untyped, startX + tw, 0);
         ctx.restore();
     });
 
-    // Dibujar nave
     ctx.save();
     ctx.translate(state.ship.x, state.ship.y);
     ctx.rotate(state.ship.angle);
-    
-    // Llama propulsora
-    ctx.fillStyle = '#fb923c'; // orange-400
+    const ss = 14 * s;
+    ctx.fillStyle = '#fb923c';
     ctx.beginPath();
-    ctx.moveTo(-10, 15);
-    ctx.lineTo(10, 15);
-    ctx.lineTo(0, 15 + Math.random() * 20); // Parpadeo de llama
-    ctx.closePath();
-    ctx.fill();
-
-    // Cuerpo de nave
-    ctx.fillStyle = '#e2e8f0'; // slate-200
-    ctx.strokeStyle = '#0284c7'; // sky-600
-    ctx.lineWidth = 2;
+    ctx.moveTo(-ss*0.6, ss*0.6);
+    ctx.lineTo(ss*0.6, ss*0.6);
+    ctx.lineTo(0, ss*0.6 + Math.random()*ss*0.8);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#e2e8f0'; ctx.strokeStyle = '#0284c7'; ctx.lineWidth = 1.5*s;
     ctx.beginPath();
-    ctx.moveTo(0, -25);
-    ctx.lineTo(15, 15);
-    ctx.lineTo(-15, 15);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-    
-    // Cabina
-    ctx.fillStyle = '#38bdf8'; // sky-400
+    ctx.moveTo(0, -ss); ctx.lineTo(ss*0.7, ss*0.6); ctx.lineTo(-ss*0.7, ss*0.6);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#38bdf8';
     ctx.beginPath();
-    ctx.moveTo(0, -10);
-    ctx.lineTo(5, 5);
-    ctx.lineTo(-5, 5);
-    ctx.closePath();
-    ctx.fill();
-
+    ctx.moveTo(0, -ss*0.4); ctx.lineTo(ss*0.25, ss*0.2); ctx.lineTo(-ss*0.25, ss*0.2);
+    ctx.closePath(); ctx.fill();
     ctx.restore();
 
-    // Dibujar partículas
     state.particles.forEach(p => {
         ctx.globalAlpha = p.life;
         ctx.fillStyle = p.color;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, 2*s, 0, Math.PI*2);
         ctx.fill();
     });
-    ctx.globalAlpha = 1.0;
+    ctx.globalAlpha = 1;
 
-    // Dibujar textos flotantes
-    ctx.font = 'bold 24px "Fira Code", monospace';
+    const ftSize = Math.max(12, 16 * s);
+    ctx.font = `bold ${ftSize}px "Fira Code", monospace`;
     state.floatingTexts.forEach(ft => {
         ctx.globalAlpha = ft.life;
-        ctx.fillStyle = '#facc15'; // yellow-400
+        ctx.fillStyle = '#facc15';
         ctx.textAlign = 'center';
         ctx.fillText(ft.text, ft.x, ft.y);
     });
-    ctx.globalAlpha = 1.0;
+    ctx.globalAlpha = 1;
 }
 
 function gameLoop() {
-    if (!state.isRunning) return;
-    update();
-    draw();
+    if(!state.isRunning) return;
+    update(); draw();
     requestAnimationFrame(gameLoop);
 }
 
-// Eventos de menú
 startBtn.addEventListener('click', startGame);
-
-// Enfocar input en clic para asegurar teclado en móviles
-canvas.addEventListener('click', () => {
-    if(state.isRunning) mobileInput.focus();
-});
-
-// Dibujar el fondo inicial antes de jugar
-initStars();
-draw();
-
+canvas.addEventListener('click', () => { if(state.isRunning) mobileInput.focus(); });
+initStars(); draw();

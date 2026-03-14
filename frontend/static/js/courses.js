@@ -1,13 +1,15 @@
-import { btnBack, btnCreate, modalCourses, coverCourseIn, previewImg, placeHolder, courseTitle, courseDesc, moduleCont, btnModule, coursePublic, cateSelect, gameSelect, submitBtn, modalTitle, workS} from "./elements.js";
+import { btnCreate, modalCourses, coverCourseIn, previewImg, placeHolder, courseTitle, courseDesc, moduleCont, btnModule, coursePublic, cateSelect, gameSelect, submitBtn, modalTitle, workS, desc, title, bad, cover, container, closeBtn} from "./elements.js";
 
 const port = "http://127.0.0.1:4000/api/courses";
 
 //-----------------form logic----------------------------//
 
 let courseData = null;
+let currentCourse = null;
 
 let myModules = [];
 let publicCourses = [];
+let enrolled = [];
 
 async function loadCourses(){
 
@@ -27,7 +29,7 @@ async function loadCourses(){
 
             const data = await myRes.json();
             const created = data.data.created || [];
-            const enrolled = data.data.enrolled || [];
+            enrolled = data.data.enrolled || [];
 
             courseData = created[0] || null;
 
@@ -49,7 +51,10 @@ async function loadCourses(){
 
         }
 
+        const allCourses = [...(courseData ? [courseData] : []), ...enrolled];
+        allCourses.forEach((course, index) => renderCards(course, index));
 
+        workSpace();
 
     } catch (error) {
     
@@ -57,6 +62,29 @@ async function loadCourses(){
 
     };
 
+}
+
+window.joinCourse = async (courseId) => {
+    try {
+
+        const res = await fetch(`${port}/join`, {
+            method: "POST",
+            credentials: "include",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({ courseId })
+        });
+
+        if(res.ok){
+
+            document.getElementById("search-dropdown")?.remove();
+            await loadCourses();
+        }
+
+    } catch (error) {
+
+        console.error("Error joining course:", error);
+
+    }
 }
 
 async function createOrEdit(){
@@ -354,11 +382,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function renderCards(data, index) {
     
-    const card = createElement("div");
+    const card = document.createElement("div");
     card.className= "floating-card"
-    const cardId = `card_${courseData.id}`
+    const cardId = `card_${data.course_id}`
 
-    const savedPos = JSON.parse(localStorage.getItem(`pos_${cardId}`));
+    const savedPos = JSON.parse(localStorage.getItem(`pos_${card.id}`));
 
     let startX = 100 + (40 * index);
     let startY = 100 + (40 * index);
@@ -375,23 +403,28 @@ function renderCards(data, index) {
     card.style.left = startX + "px";
     card.style.top = startY + "px";
 
+    const headerColor = data.is_mine ? "#1e3a5f" : "#1e3a2f";
+    const authorTag = data.is_mine ? "Mine" : (data.author_name || "Community");
+
     card.innerHTML = `
-        <div class="card-header-drag" style="background: ${headerColor};">
-            <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-book"></i>
-                <span class="text-truncate" style="max-width: 200px;">${courseData.title}</span>
-            </div>
-            <i class="bi bi-arrows-move"></i>
+        <div class="card-header-drag flex items-center gap-2 px-4 py-3 rounded-t-2xl cursor-grab" style="background: ${headerColor};">
+            <i class="bi bi-mortarboard-fill" style="color:rgba(255,255,255,0.8); font-size:15px;"></i>
+            <span style="color:white; font-weight:600; font-size:13px; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${data.title}</span>
+            <span style="font-size:10px; font-weight:700; padding:2px 8px; border-radius:999px; flex-shrink:0; ${data.is_mine ? 'background:rgba(59,130,246,0.3); color:#93c5fd;' : 'background:rgba(100,116,139,0.3); color:#cbd5e1;'}">${authorTag}</span>
+            <i class="bi bi-arrows-move" style="color:rgba(255,255,255,0.4); font-size:13px;"></i>
         </div>
-        <div class="card-body-content position-relative">
-            <span class="badge bg-light text-dark position-absolute top-0 end-0 m-3 shadow-sm border" style="z-index: 10;">${authorTag}</span>
-            ${courseData.cover ? `<img src="${courseData.cover}" style="width:100%; height:120px; object-fit:cover; border-radius:8px; margin-bottom:12px;">` : ''}
-            <p class="small text-muted mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${courseData.description || 'Sin descripción'}</p>
-            <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3 text-center border border-primary border-opacity-25" style="font-weight:600; font-size:0.8rem;">
+        <div class="p-4">
+            ${data.cover_photo 
+                ? `<img src="${data.cover_photo}" class="w-full h-[100px] object-cover rounded-xl mb-3" onerror="this.style.display='none'">` 
+                : ''}
+            <p class="text-white/60 text-xs mb-3 line-clamp-2">${data.description || 'Sin descripción'}</p>
+            <div class="bg-blue-500/10 text-blue-400 text-[11px] font-bold py-2 px-3 rounded-xl text-center border border-blue-500/20">
                 <i class="bi bi-mouse2-fill me-1"></i> Doble clic para estudiar
             </div>
         </div>
     `;
+
+    card.addEventListener("dblclick", () => window.openPlayer(data));
 
     document.body.appendChild(card);
     draggble(card)
@@ -402,11 +435,11 @@ function renderCards(data, index) {
 function collision(item){
 
     const side1 = item.getBoundingClientRect();
-    const others = document.querySelector(".floating-card")
+    const others = document.querySelectorAll(".floating-card");
 
     for(let other of others){
 
-        if(other === side1) continue
+        if(other === item) continue
 
         const side2 = other.getBoundingClientRect();
         const collisionM = 10;
@@ -422,7 +455,7 @@ function collision(item){
 
 function draggble(item){
 
-    const header = el.querySelector('.card-header-drag');
+    const header = item.querySelector('.card-header-drag');
     let mouseX, mouseY, initialX, initialY;
     const margin = 24, bottomNavHeight = 75, iman = 40; 
 
@@ -441,19 +474,19 @@ function draggble(item){
 
             e.preventDefault();
 
-            let diffX = mouseX - initialX;
-            let diffY = mouseY - initialY;
+            let diffX = e.clientX - mouseX;
+            let diffY = e.clientY - mouseY;
 
             mouseX = e.clientX
             mouseY = e.clientY
 
-            let nT = item.offsetTop - diffY;
-            let nL = item.offsetLeft - diffX;
+            let nT = item.offsetTop + diffY;
+            let nL = item.offsetLeft + diffX;
 
             let maxBottom = window.innerHeight - item.offsetHeight - margin - bottomNavHeight;
 
             nT = Math.max(margin, Math.min(nT, maxBottom))
-            nL = Math.max(margin, Math.min(nL, window.innerWidth - item.ofsetWidth - margin))
+            nL = Math.max(margin, Math.min(nL, window.innerWidth - item.offsetWidth - margin))
 
             item.style.top = nT + "px";
             item.style.left = nL + "px";
@@ -490,9 +523,9 @@ function draggble(item){
                 if(fL > window.innerWidth - item.innerWidth - margin - iman) fL = window.innerWidth - item.offsetWidth - margin; 
 
                 item.style.top = fT + "px";
-                item.style.left = fT + "px"
+                item.style.left = fL + "px"
             
-                localStorage.setItem(`pos_${item.id}`, JSON.stringify({ x: finalL, y: finalT }));
+                localStorage.setItem(`pos_${item.id}`, JSON.stringify({ x: fL, y: fT }));
             }
 
         }
@@ -503,9 +536,9 @@ function draggble(item){
 
 function workSpace(){
     if(courseData || publicCourses.length > 0){
-        workS.class.add("dashboard-mode")
+        workS.classList.add("dashboard-mode")
     }else{
-        workS.class.remove("dashboard-mode")
+        workS.classList.remove("dashboard-mode")
     }
 }
 
@@ -513,8 +546,8 @@ window.addEventListener('message', async (e) => {
     if(e.data.type === 'GAME_OVER'){
         await saveScore({
             score: e.data.score,
-            gameId: courseData.game_id,
-            courseId: courseData.course_id
+            gameId: currentCourse.game_id,
+            courseId: currentCourse.course_id
         });
     }
 });
@@ -550,4 +583,123 @@ async function saveScore({score, gameId, courseId}) {
 
     }
     
+};
+
+window.openPlayer = (data) => {
+
+    currentCourse = data
+    
+    document.querySelectorAll(".floating-card").forEach(c => c.style.display="none");
+
+    title.innerText = data.title;
+    desc.innerText = data.description || "...";
+    cover.src = data.cover_photo || "";
+
+    bad.innerHTML = data.is_mine ? `<span class="bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">MI PROYECTO</span>` : `<span class="bg-slate-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">COMUNIDAD</span>`;
+    const mod = document.getElementById("player-modules"); mod.innerHTML = "";
+
+    console.log({
+        title: document.getElementById("player-title"),
+        desc: document.getElementById("player-desc"),
+        cover: document.getElementById("player-cover"),
+        bad: document.getElementById("player-badges"),
+        mod: document.getElementById("player-modules"),
+        container: document.getElementById("player-container"),
+        closeBtn: document.getElementById("btn-close-player")
+    });
+
+    if(data.modules?.length > 0) {
+        data.modules.forEach((m, i) => mod.innerHTML += `<div class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white transition-colors hover:bg-white/10 flex gap-3 align-items-center"><div class="bg-blue-500 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0">${i+1}</div><h6 class="font-bold m-0 text-sm">${m.title || "Módulo "+(i+1)}</h6></div>`);
+    } else mod.innerHTML = "<p class='text-white/50 text-xs'>No hay lecciones.</p>";
+
+    container.classList.add("visible");
+    closeBtn.style.display="block";
+
+    initMiniGame();
+
+};
+
+window.closePlayer = () => { 
+    document.getElementById("game-iframe").src = "about:blank"; 
+    document.getElementById("player-container").classList.remove("visible"); 
+    document.getElementById("btn-close-player").style.display="none"; 
+    document.querySelectorAll(".floating-card").forEach(c => c.style.display="flex"); 
+};
+
+closeBtn.addEventListener("click", closePlayer);
+
+window.initMiniGame = () => {
+    const iframe = document.getElementById("game-iframe");
+    const status = document.getElementById("game-status");
+    if (iframe) {
+        status.innerText = "Recargando actividad...";
+
+        iframe.src = `../../games/${currentCourse.game_src}/typeZenith.html`;
+        setTimeout(() => { status.innerText = ""; }, 1000);
+    }
+};
+
+window.searchCourse = (query) => {
+
+    const results = publicCourses.filter(c =>
+
+        c.title.toLowerCase().includes(query.toLowerCase()) ||
+        c.description.toLowerCase().includes(query.toLowerCase())
+        
+    );
+    renderResults(results);
+}
+
+function renderResults(results){
+
+    const existing = document.getElementById("search-dropdown");
+    if(existing) existing.remove();
+
+    if(results.length === 0) return;
+
+    const dropdown = document.createElement("div");
+    dropdown.id = "search-dropdown";
+    dropdown.className = `
+        absolute bottom-full mb-2 left-0 w-[320px] 
+        bg-slate-900/95 backdrop-blur-xl border border-white/10 
+        rounded-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)] 
+        overflow-hidden z-[9000] max-h-[400px] overflow-y-auto
+    `;
+
+    dropdown.innerHTML = results.map(c => `
+        <div class="flex gap-3 p-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0">
+            <img 
+                src="${c.cover_photo || ''}" 
+                onerror="this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=200&q=60'"
+                class="w-14 h-14 rounded-xl object-cover shrink-0"
+            />
+            <div class="flex flex-col justify-between flex-1 min-w-0">
+                <div>
+                    <p class="text-white font-bold text-sm truncate">${c.title}</p>
+                    <p class="text-white/50 text-xs truncate">${c.description || ''}</p>
+                </div>
+                <div class="flex items-center justify-between mt-1">
+                    <span class="text-white/30 text-[10px]">${c.author_name || ''}</span>
+                    <button 
+                        onclick="joinCourse('${c.course_id}')"
+                        class="bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-400 text-[10px] font-bold px-3 py-1 rounded-full border border-emerald-500/20 transition-colors pointer-events-auto">
+                        + Join
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    const searchWrapper = document.querySelector(".search");
+    searchWrapper.style.position = "relative";
+    searchWrapper.appendChild(dropdown);
+
+    setTimeout(() => {
+        document.addEventListener("click", (e) => {
+            if(!dropdown.contains(e.target)){
+                dropdown.remove();
+            }
+        }, { once: true });
+    }, 0);
+
 }
