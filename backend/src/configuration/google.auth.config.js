@@ -8,7 +8,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://127.0.0.1:4000/auth/google/callback"
+      callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://127.0.0.1:4000/auth/google/callback"
     },
     async (accessToken, refreshToken, profile, done) => {
  
@@ -31,23 +31,22 @@ passport.use(
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
- 
+
 passport.deserializeUser(async (id, done) => {
   try {
- 
+
     const user = await pool.query(
       "SELECT * FROM users WHERE id=$1",
       [id]
     );
- 
+
     done(null, user.rows[0]);
- 
+
   } catch (error) {
- 
+
     done(error, null);
- 
+
   }
 });
- 
+
 export default passport;
- 

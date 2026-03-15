@@ -6,15 +6,26 @@ const authRoutes = express.Router();
 
 authRoutes.post("/login", authController.login);
 authRoutes.post("/register", authController.register);
+
 authRoutes.post("/logout", (req, res) => {
-    res.clearCookie("user_session", { path: "/" });
-    res.clearCookie("connect.sid", { path: "/" });
+
+    const cookieOptions = {
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+    };
+
+    res.clearCookie("user_session", cookieOptions);
+    res.clearCookie("connect.sid", cookieOptions);
 
     if (req.session) {
-        req.session.destroy(() => {
+        req.session.destroy((err) => {
+            if (err) return res.status(500).json({ error: "No se pudo cerrar sesión" });
+            res.clearCookie('connect.sid');
             return res.json({ message: "Logged out" });
         });
-        return;
+    } else {
+        return res.json({ message: "Logged out" });
     }
 
     return res.json({ message: "Logged out" });
@@ -24,7 +35,7 @@ authRoutes.get("/confirm/:token", authController.confirmEmail);
 
 authRoutes.get("/", isGuest, (req, res) =>{
 
-    res.redirect("/register")
+    res.redirect(`${process.env.FRONTEND_URL}/frontend/templates/auth/index.html`)
 
 })
 

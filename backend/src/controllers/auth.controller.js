@@ -1,6 +1,6 @@
 import * as authService from '../services/auth.service.js';
 import { notifyLogin, notifyEmailConfirmation } from '../services/n8n.service.js';
-const port = "http://127.0.0.1:5500"
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://127.0.0.1:5500";
 
 const register = async (req, res) => {
     console.log("Datos recibidos en register:", req.body);
@@ -51,11 +51,10 @@ const login = async (req, res) => {
 
         if (result.match) {
             res.cookie("user_session", result.userFound.id, {
-                httpOnly: true,
-                secure: false,
+                secure: process.env.NODE_ENV === "production", 
+                sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
                 sameSite: "lax",
                 path: "/",
-                domain: "127.0.0.1",
                 maxAge: 24 * 60 * 60 * 1000,
             });
 
@@ -88,7 +87,7 @@ const confirmEmail = async (req, res) => {
         
         if (isVerified) {
             // if all it's okey redirect to login
-            return res.redirect(`${port}/frontend/templates/auth/index.html`);
+            return res.redirect(`${FRONTEND_URL}/frontend/templates/auth/index.html`);
         }
         
         // If the token don't exists or was used

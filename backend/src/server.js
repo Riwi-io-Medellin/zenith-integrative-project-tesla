@@ -4,7 +4,7 @@ import "dotenv/config"
 import { connectPg } from "./configuration/posgresdb.js";
 
 
-const PORT = process.env.APP_PORT || 4000;
+const PORT = process.env.PORT || process.env.APP_PORT || 4000;
 
 const startServer = async () => {
 

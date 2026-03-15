@@ -14,9 +14,11 @@ import badgesRoutes from "./routes/badges.routes.js";
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 app.use(cors({
-    origin: "http://127.0.0.1:5500",
-    credentials: true
+  origin: [process.env.FRONTEND_URL, "http://127.0.0.1:5500", "http://localhost:5500"],
+  credentials: true
 }));
 
 app.use(express.json({ limit: "10mb" }));
@@ -29,8 +31,8 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false,
-    sameSite: "lax"
+    secure: process.env.NODE_ENV === "production",  
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
   }
 }));
 
