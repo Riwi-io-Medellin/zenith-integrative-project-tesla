@@ -19,7 +19,7 @@ const notifyN8n = async (path, payload) => {
         });
 
         // Log response status
-        console.log(`[n8n] Response:`, res.status);
+        /* console.log(`[n8n] Response:`, res.status); */
 
     } catch (error) {
         // Log error without interrupting the main application flow
