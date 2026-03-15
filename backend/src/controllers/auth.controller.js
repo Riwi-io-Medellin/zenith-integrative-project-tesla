@@ -1,5 +1,5 @@
 import * as authService from '../services/auth.service.js';
-import { notifyRegister, notifyLogin, notifyEmailConfirmation } from '../services/n8n.service.js';
+import { notifyLogin, notifyEmailConfirmation } from '../services/n8n.service.js';
 const port = "http://127.0.0.1:5500"
 
 const register = async (req, res) => {
