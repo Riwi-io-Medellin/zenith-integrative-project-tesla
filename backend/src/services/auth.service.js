@@ -26,7 +26,8 @@ const registerUser = async (full_name, email, password ) => {
         `;
         
         //Values per defect sures
-        const defaultDescription = "¡Bienvenido a mi perfil , te invito a que modifiques mi informacion con el boton que esta por aqui -->!";
+        // ¡Bienvenido a mi perfil , te invito a que modifiques mi informacion con el boton que esta por aqui -->!
+        const defaultDescription = "";
         const defaultLang = "Spanish";
         const defaultPhone = "0";   
         const defaultCountry = "0"; 

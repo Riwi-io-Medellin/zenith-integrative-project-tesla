@@ -6,6 +6,19 @@ const authRoutes = express.Router();
 
 authRoutes.post("/login", authController.login);
 authRoutes.post("/register", authController.register);
+authRoutes.post("/logout", (req, res) => {
+    res.clearCookie("user_session", { path: "/" });
+    res.clearCookie("connect.sid", { path: "/" });
+
+    if (req.session) {
+        req.session.destroy(() => {
+            return res.json({ message: "Logged out" });
+        });
+        return;
+    }
+
+    return res.json({ message: "Logged out" });
+});
 
 authRoutes.get("/confirm/:token", authController.confirmEmail);
 

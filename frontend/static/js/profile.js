@@ -2,7 +2,6 @@ const badgeSearch = document.querySelector("#badgeSearch");
 const badgeCards = Array.from(document.querySelectorAll("[data-badge]"));
 const avatarInput = document.querySelector("#avatarInput");
 const avatarLabel = document.querySelector(".avatar");
-const footerAvatar = document.querySelector(".footer__avatar");
 
 const port = "http://127.0.0.1:4000";
 
@@ -19,11 +18,6 @@ if (avatarInput && avatarLabel) {
     avatarLabel.textContent = "";
     avatarLabel.appendChild(preview);
 
-    // Keep footer avatar synced with the main avatar
-    if (footerAvatar) {
-      footerAvatar.textContent = "";
-      footerAvatar.appendChild(preview.cloneNode());
-    }
   });
 }
 
@@ -88,6 +82,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log("profile.js loaded");
 
     const btnOpenEdit = document.getElementById("edit_profile");
+    const btnLogout = document.getElementById("logoutBtn");
     const profileView = document.getElementById("profileView");
     const editSection = document.getElementById("editSection");
     const btnCancelEdit = document.getElementById("cancelEdit");
@@ -180,6 +175,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     btnCancelEdit?.addEventListener("click", () => {
         editSection.style.display = "none";
         profileView.style.display = "block";
+    });
+
+    btnLogout?.addEventListener("click", async () => {
+        try {
+            await fetch(`${port}/api/auth/logout`, {
+                method: "POST",
+                credentials: "include"
+            });
+        } catch (error) {
+            console.error("Logout error:", error);
+        } finally {
+            window.location.href = "/frontend/templates/auth/index.html";
+        }
     });
 
     // Send updated profile to backend
