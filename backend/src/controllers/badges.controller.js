@@ -6,7 +6,7 @@ export const assignBadgeController = async (req, res) => {
         const { emblemId } = req.body;
 
         if (!emblemId) {
-            return res.status(400).json({ success: false, message: "emblemId es requerido" });
+            return res.status(400).json({ success: false, message: "emblemId is required" });
         }
 
         const result = await assignBadge(userId, emblemId);
@@ -32,7 +32,7 @@ export const getUserBadgesController = async (req, res) => {
         const { userId } = req.params;
 
         if (!userId) {
-            return res.status(400).json({ success: false, message: "Falta el userId" });
+            return res.status(400).json({ success: false, message: "Without userId" });
         }
 
         const badges = await getUserBadges(userId);

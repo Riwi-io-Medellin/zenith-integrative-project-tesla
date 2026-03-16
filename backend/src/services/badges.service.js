@@ -6,7 +6,6 @@ const BADGE_IDS = {
     MINIGAME_SCORE:        '1ea16173-30a6-4958-b53e-a32c62801834',
 };
 
-// Asigna una insignia al usuario si aún no la tiene
 export const assignBadge = async (userId, emblemId) => {
     try {
         const exists = await pool.query(
@@ -31,7 +30,6 @@ export const assignBadge = async (userId, emblemId) => {
     }
 };
 
-// Obtiene todas las insignias del usuario con su información completa
 export const getUserBadges = async (userId) => {
     try {
         const query = `

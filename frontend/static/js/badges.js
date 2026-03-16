@@ -8,7 +8,7 @@ function fixPhotoUrl(photo) {
 
 async function renderBadges(userId) {
     if (!userId) {
-        console.error("renderBadges: userId no definido");
+        console.error("renderBadges: userId its not defined");
         return;
     }
 
@@ -25,8 +25,8 @@ async function renderBadges(userId) {
         });
 
         if (!response.ok) {
-            console.error("Error al obtener insignias:", response.status);
-            if (badgeGrid) badgeGrid.innerHTML = `<p class="text-white" style="padding:1rem;">No se pudieron cargar las insignias.</p>`;
+            console.error("Error to obtain badges:", response.status);
+            if (badgeGrid) badgeGrid.innerHTML = `<p class="text-white" style="padding:1rem;">Can't load badges.</p>`;
             return;
         }
 
@@ -34,7 +34,7 @@ async function renderBadges(userId) {
         const badges = json.data || [];
 
         if (badges.length === 0) {
-            if (badgeGrid) badgeGrid.innerHTML = `<p class="text-white" style="padding:1rem;">Aún no tienes insignias. ¡Sigue explorando!</p>`;
+            if (badgeGrid) badgeGrid.innerHTML = `<p class="text-white" style="padding:1rem;">In this moment you don't have any badges. ¡Continue exploring!</p>`;
             return;
         }
 
@@ -94,7 +94,7 @@ async function renderBadges(userId) {
         await renderRecentActivity();
 
     } catch (error) {
-        console.error("Error en renderBadges:", error);
+        console.error("Error in renderBadges:", error);
     }
 }
 
@@ -158,6 +158,6 @@ async function renderRecentActivity() {
         }).join("");
 
     } catch (error) {
-        console.error("Error en renderRecentActivity:", error);
+        console.error("Error in renderRecentActivity:", error);
     }
 }
