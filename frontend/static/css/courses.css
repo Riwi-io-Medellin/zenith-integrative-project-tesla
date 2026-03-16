@@ -276,6 +276,7 @@ body.dashboard-mode::after {
     opacity: 0.6;
     transition: opacity 0.2s;
     flex-shrink: 0;
+    align-self: flex-start;
 }
 
 .btn-delete-mod:hover {

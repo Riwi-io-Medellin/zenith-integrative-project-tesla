@@ -1,4 +1,4 @@
-import { btnCreate, modalCourses, coverCourseIn, previewImg, placeHolder, courseTitle, courseDesc, moduleCont, btnModule, coursePublic, cateSelect, gameSelect, submitBtn, modalTitle, workS, desc, title, bad, cover, container, closeBtn, iframe, status } from "./elements.js";
+import { btnCreate, modalCourses, coverCourseIn, previewImg, placeHolder, courseTitle, courseDesc, moduleCont, btnModule, coursePublic, cateSelect, gameSelect, submitBtn, modalTitle, workS, title, bad, cover, container, closeBtn, iframe, status } from "./elements.js";
  
 const port = "http://127.0.0.1:4000/api/courses";
  
@@ -209,9 +209,9 @@ function renderModules(){
         card.id = `mod-${mod.id}`;
         
         card.innerHTML = `
-            <div class="d-flex align-items-start gap-3">
+            <div class="flex items-start gap-3">
                 <div class="index-badge mt-1">${index + 1}</div>
-                <div class="flex-grow-1">
+                <div class="flex-1">
                     <input type="text" 
                             class="module-title-input" 
                             value="${mod.title || ""}" 
@@ -220,7 +220,7 @@ function renderModules(){
                                 rows="2" 
                                 placeholder="Module description...">${mod.content || ""}</textarea>
                 </div>
-                <button class="btn btn-delete-mod mt-1">
+                <button class="btn-delete-mod self-start mt-1">
                     <i class="bi bi-x-circle-fill"></i>
                 </button>
             </div>
@@ -705,16 +705,20 @@ window.openPlayer = (data) => {
     document.querySelectorAll(".floating-card").forEach(c => c.style.display="none");
  
     title.innerText = data.title;
-    desc.innerText = data.description || "...";
+    document.getElementById("player-desc").innerText = data.description || "...";
     cover.src = data.cover_photo || "";
  
     bad.innerHTML = data.is_mine ? `<span class="bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">MI PROYECTO</span>` : `<span class="bg-slate-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">COMUNIDAD</span>`;
     const mod = document.getElementById("player-modules"); mod.innerHTML = "";
  
-    if(data.modules?.length > 0) {
-        data.modules.forEach((m, i) => mod.innerHTML += `<div class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white transition-colors hover:bg-white/10 flex gap-3 align-items-center"><div class="bg-blue-500 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0">${i+1}</div><h6 class="font-bold m-0 text-sm">${m.title || "Módulo "+(i+1)}</h6></div>`);
-    } else mod.innerHTML = "<p class='text-white/50 text-xs'>No hay lecciones.</p>";
- 
+if(data.modules?.length > 0) {
+    data.modules.forEach((module, index) => {
+        const content = module.content ? "<p class='text-white/50 text-xs m-0 mt-1'>" + module.content + "</p>" : "";
+        const item = "<div class='bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white transition-colors hover:bg-white/10 flex gap-3 items-start'><div class='bg-blue-500 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0'>" + (index+1) + "</div><div class='flex flex-col'><h6 class='font-bold m-0 text-sm'>" + (module.title || "Módulo " + (index+1)) + "</h6>" + content + "</div></div>";
+        mod.innerHTML += item;
+    });
+} else mod.innerHTML = "<p class='text-white/50 text-xs'>No hay lecciones.</p>";
+
     container.classList.add("visible");
     closeBtn.style.display = "block";
     btnCreate.style.display = "none";

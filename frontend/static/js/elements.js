@@ -44,7 +44,7 @@ export const placeHolder = document.getElementById("bg-Img-Placeholder")
 //Player Modal
 
 export const title = document.getElementById("player-title");
-export const desc = document.getElementById("player-desc");
+
 export const cover = document.getElementById("player-cover");
 export const bad = document.getElementById("player-badges");
 export const mod = document.getElementById("player-modules");
