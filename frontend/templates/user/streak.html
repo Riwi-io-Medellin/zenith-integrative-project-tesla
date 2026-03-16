@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenith</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../static/css/streak.css">
+    <link rel="stylesheet" href="../../static/css/partials.css">
+</head>
+<body>
+
+    <!-- Celebration overlay -->
+    <div id="celebrationOverlay">
+        <div class="text-center">
+            <div class="flex items-center justify-center gap-4">
+                <span class="huge-streak" id="celebrationNumber">0</span>
+            </div>
+            <p class="text-2xl tracking-[0.5em] font-bold mt-4 uppercase">¡New streak!</p>
+            <p class="mt-2 font-medium" style="color:#00e0c6;">Congratulations</p>
+        </div>
+    </div>
+
+    <div class="page">
+        <div class="streak-grid">
+
+            <!-- Streak card -->
+            <div class="streak-card streak-card--left">
+                <div class="card-label">Consistency Status</div>
+                <div class="card-subtitle">Activity Peak</div>
+                <div class="streak-display">
+                    <span class="bracket">&lt;</span>
+                    <h1 id="dayStreak" class="streak-num">0</h1>
+                    <span class="bracket">&gt;</span>
+                </div>
+                <div class="stat-grid">
+                    <div class="stat-box">
+                        <div class="stat-lbl">Best</div>
+                        <div class="stat-val" id="previousBest">---</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-lbl">Rank</div>
+                        <div class="stat-val" id="globalRank">---</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar card -->
+            <div class="streak-card streak-card--right">
+                <div class="cal-header">
+                    <span class="card-subtitle">Focus Intensity</span>
+                    <span class="month-lbl" id="currentMonthLabel"></span>
+                </div>
+                <div class="cal-weekdays">
+                    <div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div><div>S</div>
+                </div>
+                <div id="calendarGrid" class="cal-numbers"></div>
+            </div>
+
+            <!-- Historical Logs -->
+            <div class="streak-card streak-card--full">
+                <div class="card-subtitle" style="margin-bottom:14px;">Historical Logs</div>
+                <div style="overflow-x:auto;">
+                    <table class="log-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Efficiency</th>
+                                <th>XP Earned</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script type="module">
+        import { loadPartial } from "../../static/js/partials.js";
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadPartial('footer-container', "../partials/navbar.html");
+        });
+    </script>
+
+    <script src="../../static/js/streak.js"></script>
+
+</body>
+</html>

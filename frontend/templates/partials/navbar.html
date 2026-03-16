@@ -1,0 +1,78 @@
+<footer class="footer">
+    <div class="w-full h-full px-3 md:px-6 flex flex-col justify-center">
+
+        <!-- Main row -->
+        <div class="flex items-center w-full gap-4" style="height:60px;">
+
+            <!-- Brand -->
+            <div class="hidden md:flex items-center gap-2 flex-shrink-0 font-semibold text-sm" style="color:#94a3b8;">
+                <i class="bi bi-shield-fill" style="color:#06f9f9;"></i>
+                <span>Zenith</span>
+            </div>
+
+            <!-- Nav -->
+            <div class="flex-1 flex justify-around md:justify-center items-center md:gap-1 footer__nav">
+                <a href="../dashboard/dashboard.html">
+                    <i class="bi bi-grid"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="../user/profile.html">
+                    <i class="bi bi-person-fill"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="../user/streak.html">
+                    <i class="bi bi-trophy"></i>
+                    <span>Leaderboard</span>
+                </a>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex-shrink-0 flex items-center gap-2">
+
+                <!-- Search desktop -->
+                <div class="search hidden lg:flex items-center gap-2">
+                    <i class="bi bi-search" style="color:#94a3b8; font-size:13px;"></i>
+                    <input id="course_search" type="text" placeholder="Search courses..." autocomplete="off" />
+                </div>
+
+                <!-- Search tablet -->
+                <div class="search-wrap hidden md:flex lg:hidden" style="position:relative;">
+                    <button class="icon-btn flex items-center justify-center" id="tablet-search-btn" type="button">
+                        <i class="bi bi-search" style="font-size:14px;"></i>
+                    </button>
+                    <div class="search-expand" id="tablet-search-expand">
+                        <i class="bi bi-search" style="color:#94a3b8; font-size:13px;"></i>
+                        <input id="course_search_tablet" type="text" placeholder="Search courses..." autocomplete="off" />
+                    </div>
+                </div>
+
+                <!-- Bell — tablet/desktop only -->
+                <button class="icon-btn hidden md:flex items-center justify-center" type="button">
+                    <i class="bi bi-bell" style="font-size:14px;"></i>
+                </button>
+
+                <!-- Avatar desktop -->
+                <div class="hidden lg:flex items-center gap-2 footer__avatar-pill">
+                    <div class="footer__avatar"></div>
+                    <span class="text-xs font-medium" style="color:#94a3b8;"></span>
+                </div>
+
+                <!-- Avatar mobile/tablet -->
+                <div class="footer__avatar lg:hidden"></div>
+
+            </div>
+        </div>
+
+        <!-- Mobile search row -->
+        <div class="flex md:hidden items-center gap-2 pb-2">
+            <div class="search flex flex-1 items-center gap-2">
+                <i class="bi bi-search" style="color:#94a3b8; font-size:13px;"></i>
+                <input id="course_search_mobile" type="text" placeholder="Search courses..." autocomplete="off" style="flex:1; width:100%;" />
+            </div>
+            <button class="icon-btn flex items-center justify-center" type="button">
+                <i class="bi bi-bell" style="font-size:14px;"></i>
+            </button>
+        </div>
+
+    </div>
+</footer>

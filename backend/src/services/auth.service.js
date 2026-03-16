@@ -1,0 +1,91 @@
+import pool from "../configuration/posgresdb.js"
+import bcrypt from "bcrypt";
+import crypto from 'crypto';
+
+
+const registerUser = async (full_name, email, password ) => {
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const verificationToken = crypto.randomUUID();
+
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        const userQuery = "INSERT INTO users (full_name, email, password, verification_token, is_verified) VALUES ($1, $2, $3, $4, false) RETURNING id";
+        const userResult = await client.query(userQuery, [full_name, email, hashedPassword, verificationToken]);
+        const userId = userResult.rows[0].id;
+
+    
+        const profileQuery = `
+            INSERT INTO profile (id, description, language, phone, country, photo) 
+            VALUES ($1, $2, $3, $4, $5, $6)
+        `;
+        
+        //Values per defect sures
+        // ¡Bienvenido a mi perfil , te invito a que modifiques mi informacion con el boton que esta por aqui -->!
+        const defaultDescription = "";
+        const defaultLang = "Spanish";
+        const defaultPhone = "0";   
+        const defaultCountry = "0"; 
+        const defaultPhoto = "";   
+
+        await client.query(profileQuery, [
+            userId, 
+            defaultDescription, 
+            defaultLang, 
+            defaultPhone, 
+            defaultCountry,
+            defaultPhoto
+        ]);
+
+        await client.query('COMMIT');
+        return { id: userId, full_name, email, verificationToken };
+
+    } catch (error) {
+
+        await client.query('ROLLBACK');
+        console.error(error.message)
+        throw error;
+
+    } finally {
+
+        client.release();
+
+    }   
+}
+
+const logedUser = async (email, password) => {
+
+    const userSelect = "SELECT * FROM users WHERE email = $1";
+    const result = await pool.query(userSelect, [email]);
+
+    if(result.rows.length === 0) return { error: "user_not_found" }
+
+    const userFound = result.rows[0];
+
+    if (!userFound.is_verified) {
+        return { error: "email_not_verified" };
+    }
+
+    const match = await bcrypt.compare(password, userFound.password);
+
+    return { match, userFound };
+
+}
+
+const verifyUserToken = async (token) => {
+
+    const result = await pool.query(
+        "UPDATE users SET is_verified=true, verification_token=null WHERE verification_token=$1 RETURNING *",
+        [token]
+    );
+    
+    return result.rowCount > 0;
+
+};
+
+export {logedUser, registerUser, verifyUserToken}

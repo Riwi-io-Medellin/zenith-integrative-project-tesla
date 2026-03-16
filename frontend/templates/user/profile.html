@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenith</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../static/css/profile.css">
+    <link rel="stylesheet" href="../../static/css/partials.css">
+</head>
+<body>
+
+    <!-- Profile view -->
+    <main class="page" id="profileView">
+
+        <!-- Header -->
+        <div class="profile-card">
+            <div class="avatar-box">
+                <label class="avatar" for="avatarInput">
+                    <img id="main_avatar_img" src="" style="display:none;">
+                    <span id="avatar_profile">AC</span>
+                </label>
+                <input type="file" id="avatarInput" accept="image/*" style="display:none;">
+            </div>
+
+            <div class="profile-info">
+                <div class="name-row">
+                    <h1 id="name_profile"></h1>
+                    <span class="chip" id="rol_profile"></span>
+                </div>
+                <p id="description_profile" class="bio">
+                    Welcome to my profile, feel free to update my information with the button over here --&gt;!
+                </p>
+                <div class="stats">
+                    <div>
+                        <span class="label">Phone</span>
+                        <span class="value" id="phone"></span>
+                    </div>
+                    <div>
+                        <span class="label">Country</span>
+                        <span class="value" id="country"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button class="profile-edit" id="edit_profile">Edit Profile</button>
+                <button class="profile-logout" id="logoutBtn" type="button">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Trophy + Activity -->
+        <div class="middle-grid">
+
+            <div class="pcard">
+                <div class="trophy-label"><i class="bi bi-award"></i> Featured Trophy</div>
+                <div class="trophy-body">
+                    <div class="trophy-icon-wrap">
+                        <i class="bi bi-award badge" id="badge"></i>
+                    </div>
+                    <div class="trophy-content">
+                        <span class="kicker">Legendary Achievement</span>
+                        <h3 id="name_insignia_main" class="name-insignia"></h3>
+                        <p id="description_insignia_main" class="text"></p>
+                        <div class="trophy-meta">
+                            <div><span class="tag-label">Earned On</span><span class="tag-value">—</span></div>
+                            <div><span class="tag-label">Category</span><span class="tag-value">—</span></div>
+                            <div><span class="tag-label">Points</span><span class="tag-value">—</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pcard activity">
+                <h2>Recent Activity</h2>
+                <ul class="list" id="activityList"></ul>
+            </div>
+
+        </div>
+
+        <!-- Badges -->
+        <div class="pcard">
+            <div class="card-head">
+                <h2>Earned Badges</h2>
+                <button class="link" type="button">View All Badges</button>
+            </div>
+            <div class="badges" id="badgeGrid"></div>
+        </div>
+
+    </main>
+
+    <!-- Edit section -->
+    <section id="editSection" style="display:none;" class="edit-section">
+        <div class="edit-wrap">
+            <div class="edit-card">
+                <h1 class="edit-title">Edit Profile</h1>
+                <form id="editProfileForm" class="edit-form">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="edit_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="edit_email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="edit_description" rows="3"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Rol</label>
+                            <input type="text" id="edit_lenguage">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="text" id="edit_phone">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Country</label>
+                        <input type="text" id="edit_country">
+                    </div>
+                    <div class="form-group text-center">
+                        <label>Profile Photo</label>
+                        <div class="edit-avatar-wrap">
+                            <label for="edit_photo" class="edit-avatar">
+                                <img id="edit_avatar_preview" src="" style="display:none;">
+                                <span id="edit_avatar_text">PF</span>
+                            </label>
+                            <input id="edit_photo" type="file" accept="image/*" style="display:none;">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save">Save Changes</button>
+                        <button type="button" id="cancelEdit" class="btn-cancel">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    <script src="../../static/js/badges.js"></script>
+
+    <script src="../../static/js/profile.js"></script>
+
+    <script type="module">
+        import { loadPartial } from "../../static/js/partials.js";
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadPartial('footer-container', "../partials/navbar.html");
+        });
+    </script>
+
+
+
+</body>
+</html>
