@@ -74,7 +74,7 @@ function iniciarTemporizadorRacha() {
         window.celebrateNewStreak(rachaActual);
 
         try {
-            await fetch("http://127.0.0.1:4000/api/streak/update-manual", {
+            await fetch(`${API_URL}/api/streak/update-manual`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ nuevoValor: rachaActual }),

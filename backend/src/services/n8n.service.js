@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 // Base URL for n8n webhooks (stored in environment variables)
-const N8N_BASE = process.env.N8N_WEBHOOK_BASE; // example: https://n8n-riwi.emausoft.com/webhook
+const N8N_BASE = process.env.N8N_WEBHOOK_BASE; 
 
 
 const notifyN8n = async (path, payload) => {

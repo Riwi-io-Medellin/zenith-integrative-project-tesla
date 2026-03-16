@@ -1,3 +1,5 @@
+const port = "https://wirintegration-production.up.railway.app"
+
 export async function loadPartial(id, path) {
     try {
         const res = await fetch(path);
@@ -43,7 +45,7 @@ export async function loadPartial(id, path) {
  
 async function loadNavbarProfile() {
     try {
-        const res = await fetch("http://127.0.0.1:4000/api/user/profile", {
+        const res = await fetch(`${port}/api/user/profile`, {
             method: "GET",
             credentials: "include"
         });

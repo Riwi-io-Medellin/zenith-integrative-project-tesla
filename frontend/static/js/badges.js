@@ -1,10 +1,4 @@
-function fixPhotoUrl(photo) {
-    if (!photo) return null;
-    let url = photo.replace(/\\/g, "/");
-    if (url.startsWith("http://") || url.startsWith("https://")) return url;
-    if (!url.startsWith("/")) url = "/" + url;
-    return url;
-}
+const port = "https://wirintegration-production.up.railway.app"
 
 async function renderBadges(userId) {
     if (!userId) {
@@ -20,7 +14,7 @@ async function renderBadges(userId) {
     const badgeIcon         = document.getElementById("badge");
 
     try {
-        const response = await fetch(`http://127.0.0.1:4000/api/badges/user/${userId}`, {
+        const response = await fetch(`${port}/api/badges/user/${userId}`, {
             credentials: "include",
         });
 
@@ -103,7 +97,7 @@ async function renderRecentActivity() {
     if (!activityList) return;
 
     try {
-        const response = await fetch(`http://127.0.0.1:4000/api/courses/sessions`, {
+        const response = await fetch(`${port}/api/courses/sessions`, {
             credentials: "include",
         });
 
