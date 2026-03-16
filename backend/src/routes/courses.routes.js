@@ -18,6 +18,9 @@ courseRoutes.get("/", isLoged, coursesControllers.getCourses);
 
 courseRoutes.post("/", isLoged, coursesControllers.postCourse);
 
+courseRoutes.get("/sessions", isLoged, coursesControllers.getSessions);
+
+
 courseRoutes.put("/:id", isLoged, coursesControllers.putCourse);
 
 courseRoutes.delete("/:id", isLoged, coursesControllers.deleteCourse);

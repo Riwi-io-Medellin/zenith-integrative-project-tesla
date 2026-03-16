@@ -10,6 +10,7 @@ import courseRoutes from "./routes/courses.routes.js";
 import googleAuthRoutes from "./routes/google.auth.routes.js";
 import "./configuration/google.auth.config.js";
 import streakRoutes from "./routes/streak.routes.js";
+import badgesRoutes from "./routes/badges.routes.js";
 
 const app = express();
 
@@ -43,5 +44,6 @@ app.use("/api/user", userRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/auth", googleAuthRoutes);
 app.use("/api/streak", streakRoutes);
+app.use("/api/badges", badgesRoutes);
 
 export default app;

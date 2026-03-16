@@ -573,8 +573,69 @@ window.addEventListener('message', async (e) => {
         });
     }
 });
- 
- 
+
+
+function showBadgeToast(badgeName, badgePhoto) {
+    // Eliminar toast anterior si existe
+    document.getElementById("badge-toast")?.remove();
+
+    const imgUrl = badgePhoto ? badgePhoto.replace(/\\/g, "/").replace(/^([^/])/, "/$1") : null;
+
+    const toast = document.createElement("div");
+    toast.id = "badge-toast";
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 90px;
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        background: linear-gradient(135deg, #1e293b, #0f172a);
+        border: 1px solid rgba(245,158,11,0.4);
+        border-radius: 16px;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        z-index: 9999;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(245,158,11,0.15);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        min-width: 280px;
+        max-width: 360px;
+    `;
+
+    toast.innerHTML = `
+        <div style="width:44px;height:44px;border-radius:12px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            ${imgUrl
+                ? `<img src="${imgUrl}" alt="${badgeName}" style="width:32px;height:32px;object-fit:contain;">`
+                : `<i class="bi bi-award-fill" style="color:#f59e0b;font-size:22px;"></i>`}
+        </div>
+        <div style="flex:1;min-width:0;">
+            <p style="margin:0;font-size:11px;font-weight:700;color:#f59e0b;text-transform:uppercase;letter-spacing:0.05em;">🏅 Badge Unlocked!</p>
+            <p style="margin:2px 0 0;font-size:14px;font-weight:700;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${badgeName}</p>
+        </div>
+        <button onclick="document.getElementById('badge-toast').remove()" style="background:none;border:none;color:rgba(148,163,184,0.5);cursor:pointer;font-size:16px;padding:0;flex-shrink:0;">✕</button>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Animación de entrada
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            toast.style.opacity = "1";
+            toast.style.transform = "translateX(-50%) translateY(0)";
+        });
+    });
+
+    // Auto-cerrar en 5 segundos
+    setTimeout(() => {
+        if (toast.isConnected) {
+            toast.style.opacity = "0";
+            toast.style.transform = "translateX(-50%) translateY(20px)";
+            setTimeout(() => toast.remove(), 400);
+        }
+    }, 5000);
+}
+
 async function saveScore({score, gameId, courseId}) {
  
     try {
@@ -587,16 +648,46 @@ async function saveScore({score, gameId, courseId}) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({score, gameId, courseId})  
-        })
+        });
  
-        const data = await res.json()
+        const data = await res.json();
  
         if(res.ok){
-            if(data.data){
-                console.log("Score save:", data.data);
-            } else {
-                console.log("Alredy exists sesion for this course");
+            console.log("Score processed successfully:", score);
+
+            // Si el backend asignó una insignia nueva, mostrar toast
+            if(data.badge && data.badge.success) {
+                // Obtener info de la insignia para mostrarla en el toast
+                try {
+                    const badgeRes = await fetch("http://127.0.0.1:4000/api/badges/user/me", {
+                        credentials: "include"
+                    });
+                    if(badgeRes.ok) {
+                        const badgeData = await badgeRes.json();
+                        const latest = (badgeData.data || [])[0];
+                        if(latest) showBadgeToast(latest.name, latest.photo);
+                    }
+                } catch(e) {
+                    // Mostrar toast genérico si falla la info
+                    showBadgeToast("New Badge Earned!", null);
+                }
+            } else if(score >= 10) {
+                // Score suficiente: intentar mostrar la insignia aunque ya existiera
+                try {
+                    const badgeRes = await fetch("http://127.0.0.1:4000/api/badges/user/me", {
+                        credentials: "include"
+                    });
+                    if(badgeRes.ok) {
+                        const badgeData = await badgeRes.json();
+                        const latest = (badgeData.data || [])[0];
+                        if(latest) showBadgeToast(latest.name, latest.photo);
+                    }
+                } catch(e) {
+                    showBadgeToast("Badge Earned!", null);
+                }
             }
+        } else {
+            console.error("Error saving score:", data);
         }
  
     } catch (error) {

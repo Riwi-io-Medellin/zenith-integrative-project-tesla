@@ -1,9 +1,13 @@
 const port = "http://127.0.0.1:4000/api";
 
-/**
- * Loads the user profile information into the dashboard preview card.
- * It fetches the user data and renders the avatar, name, and language.
- */
+function fixPhotoUrl(photo) {
+    if (!photo) return null;
+    let url = photo.replace(/\\/g, "/");
+    if (url.startsWith("http://") || url.startsWith("https://")) return url;
+    if (!url.startsWith("/")) url = "/" + url;
+    return url;
+}
+
 async function loadDashboardProfile() {
     try {
         const res = await fetch(`${port}/user/profile`, {
@@ -12,20 +16,19 @@ async function loadDashboardProfile() {
             headers: { "Accept": "application/json" }
         });
 
-        if(!res.ok) return;
+        if (!res.ok) return;
 
         const data = await res.json();
         const container = document.getElementById('preview-profile');
-        if(!container) return;
+        if (!container) return;
 
-        // Generate initials if the user does not have a profile photo
-        const initials = data.full_name?.split(" ").map(n => n[0]).join("").slice(0,2).toUpperCase() || "?";
+        const initials = data.full_name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "?";
 
         container.innerHTML = `
             <div style="display:flex; flex-direction:column; align-items:center; text-align:center;">
                 <div class="avatar" style="margin-bottom:10px;">
-                    ${data.photo 
-                        ? `<img src="${data.photo}" style="width:100%; height:100%; object-fit:cover;">` 
+                    ${data.photo
+                        ? `<img src="${data.photo}" style="width:100%; height:100%; object-fit:cover;">`
                         : `<span>${initials}</span>`
                     }
                 </div>
@@ -33,19 +36,55 @@ async function loadDashboardProfile() {
                     <h1 style="font-size:15px; font-weight:700; color:white; margin:0;">${data.full_name || ''}</h1>
                     <span class="chip">${data.language || ''}</span>
                 </div>
-                <i class="bi bi-award insignia" id="insignia" style="font-size:28px; color:#f59e0b; margin-top:10px;"></i>
+                <div id="dash-badge-container" style="margin-top:10px; width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                    <i class="bi bi-award" id="insignia" style="font-size:28px; color:#f59e0b;"></i>
+                </div>
             </div>
         `;
 
-    } catch(error) {
+        if (data.id) {
+            await loadDashboardBadge(data.id);
+        }
+
+    } catch (error) {
         console.error("Error loading dashboard profile:", error);
     }
 }
 
-/**
- * Loads the courses preview for the dashboard.
- * Includes both courses created by the user and courses the user joined.
- */
+async function loadDashboardBadge(userId) {
+    try {
+        const res = await fetch(`${port}/badges/user/${userId}`, {
+            credentials: "include"
+        });
+
+        if (!res.ok) return;
+
+        const json   = await res.json();
+        const badges = json.data || [];
+        if (badges.length === 0) return;
+
+        const latest    = badges[0];
+        const imgUrl    = fixPhotoUrl(latest.photo);
+        const container = document.getElementById("dash-badge-container");
+
+        if (!container) return;
+
+        if (imgUrl) {
+            container.innerHTML = `
+                <img 
+                    id="insignia"
+                    src="${imgUrl}" 
+                    alt="${latest.name}" 
+                    title="${latest.name}"
+                    style="width:40px;height:40px;object-fit:contain;"
+                >`;
+        }
+
+    } catch (error) {
+        console.error("Error loading dashboard badge:", error);
+    }
+}
+
 async function loadDashboardCourses() {
     try {
         const res = await fetch(`${port}/courses/`, {
@@ -57,15 +96,14 @@ async function loadDashboardCourses() {
         if (res.status === 401) return;
         if (!res.ok) return;
 
-        const data = await res.json();
-        const created = data.data.created || [];
+        const data     = await res.json();
+        const created  = data.data.created  || [];
         const enrolled = data.data.enrolled || [];
-        const all = [...created, ...enrolled];
+        const all      = [...created, ...enrolled];
 
         const container = document.getElementById('preview-courses');
         if (!container) return;
 
-        // If the user has no courses yet
         if (all.length === 0) {
             container.innerHTML = `
                 <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:8px; opacity:0.4;">
@@ -75,11 +113,10 @@ async function loadDashboardCourses() {
             return;
         }
 
-        // Render each course preview row
         container.innerHTML = all.map(c => {
             const progress = c.progress !== undefined ? c.progress : (c.is_mine ? 100 : 0);
-            const color = progress === 100 ? '#34d399' : progress > 0 ? '#06f9f9' : 'rgba(148,163,184,0.4)';
-            const label = progress === 100 ? 'Completed' : progress > 0 ? 'In progress' : 'Not started';
+            const color    = progress === 100 ? '#34d399' : progress > 0 ? '#06f9f9' : 'rgba(148,163,184,0.4)';
+            const label    = progress === 100 ? 'Completed' : progress > 0 ? 'In progress' : 'Not started';
 
             return `
                 <div class="course-row">
@@ -92,8 +129,7 @@ async function loadDashboardCourses() {
                         <div class="prog-bar"><div class="prog-fill" style="width:${progress}%;"></div></div>
                     </div>
                     <span style="font-size:10px; font-weight:700; color:${color}; flex-shrink:0;">${progress}%</span>
-                </div>
-            `;
+                </div>`;
         }).join('');
 
     } catch (error) {
@@ -101,10 +137,6 @@ async function loadDashboardCourses() {
     }
 }
 
-/**
- * Loads the user's streak information and activity summary.
- * Displays streak days, total XP, and last session date.
- */
 async function loadDashboardStreak() {
     try {
         const res = await fetch(`${port}/streak/status`, {
@@ -112,37 +144,35 @@ async function loadDashboardStreak() {
             credentials: "include"
         });
 
-        if(!res.ok) return;
+        if (!res.ok) return;
 
-        const data = await res.json();
-        const streak = data.userStats?.dayStreak || 0;
+        const data        = await res.json();
+        const streak      = data.userStats?.dayStreak || 0;
         const lastSession = data.history?.[0];
 
         const streakEl = document.getElementById('dash-streak');
-        const xpEl = document.getElementById('dash-xp');
-        const lastEl = document.getElementById('dash-last-session');
+        const xpEl     = document.getElementById('dash-xp');
+        const lastEl   = document.getElementById('dash-last-session');
 
-        if(streakEl) streakEl.innerText = `${streak}🔥`;
+        if (streakEl) streakEl.innerText = `${streak}🔥`;
 
-        if(xpEl) {
-            // Calculate total XP from activity history
+        if (xpEl) {
             const totalXp = data.history?.reduce((acc, h) => acc + (h.xp || 0), 0) || 0;
             xpEl.innerText = totalXp;
         }
 
-        if(lastEl && lastSession) {
+        if (lastEl && lastSession) {
             const date = new Date(lastSession.date);
             lastEl.innerText = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }
 
-    } catch(error) {
+    } catch (error) {
         console.error("Error loading streak:", error);
     }
 }
 
-// Initialize dashboard data when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    fetch("http://127.0.0.1:4000/api/user/profile", {
+    fetch(`${port}/user/profile`, {
         method: "GET",
         credentials: "include"
     }).then(res => {
@@ -150,14 +180,9 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = "../../templates/auth/index.html";
             return;
         }
-        // Card 1: Profile preview
         loadDashboardProfile();
-
-        // Card 2: Streak information
         loadDashboardStreak();
-
-        // Card 3: Courses preview
-        loadDashboardCourses(); 
+        loadDashboardCourses();
     }).catch(() => {
         window.location.href = "../../templates/auth/index.html";
     });
